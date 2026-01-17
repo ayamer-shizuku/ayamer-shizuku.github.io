@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>帖子详情 - JellyTime 论坛</title>
+    <title>JellyTime 论坛</title>
     <style>
         * {
             margin: 0;
@@ -12,267 +12,263 @@
         }
         body {
             max-width: 800px;
-            margin: 20px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 20px;
             background-color: #f7f8fa;
         }
-        header h1 a {
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        h1 a {
             color: #4299e1;
             text-decoration: none;
         }
-        header .login-link {
-            text-align: right;
-            margin-top: 10px;
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        header .login-link a {
-            color: #4299e1;
-            text-decoration: none;
-            font-size: 14px;
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #4299e1;
         }
-        .post-detail {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin: 20px 0;
-        }
-        .post-detail h2 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .post-detail .author {
-            color: #666;
-            font-size: 14px;
-        }
-        .like-section {
-            margin: 20px 0;
-        }
-        #like-btn {
+        .btn {
             padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
             background-color: #4299e1;
-            color: white;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
             cursor: pointer;
+            text-decoration: none;
             font-size: 14px;
         }
-        #like-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
+        .btn-outline {
+            background-color: transparent;
+            color: #4299e1;
+            border: 1px solid #4299e1;
         }
-        .comment-section {
-            background-color: #fff;
+        .post-btn {
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .post-item {
+            background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        .comment-section h3 {
-            color: #333;
             margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: box-shadow 0.3s;
         }
-        .comment-item {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+        .post-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .post-item h3 {
             margin-bottom: 10px;
         }
-        .comment-item:last-child {
-            border-bottom: none;
+        .post-item a {
+            color: #333;
+            text-decoration: none;
         }
-        .comment-author {
-            font-weight: bold;
+        .post-item a:hover {
             color: #4299e1;
-            margin-bottom: 5px;
         }
-        .comment-time {
+        .post-meta {
             font-size: 12px;
-            color: #999;
-            margin-top: 5px;
+            color: #666;
+            margin-top: 10px;
+            display: flex;
+            gap: 15px;
         }
-        .comment-input {
-            margin-top: 20px;
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
         }
-        .comment-input input,
-        .comment-input textarea {
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 18px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input, .form-group textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 10px;
+            border-radius: 6px;
             font-size: 14px;
         }
-        .comment-input textarea {
-            min-height: 80px;
+        .form-group textarea {
+            min-height: 120px;
             resize: vertical;
         }
-        #submit-comment {
-            padding: 8px 16px;
-            background-color: #4299e1;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        footer {
-            text-align: center;
-            margin: 30px 0;
-            color: #666;
-            font-size: 14px;
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
         }
         .empty-tip {
-            color: #999;
             text-align: center;
-            padding: 20px 0;
+            color: #999;
+            padding: 40px 0;
+            background: #fff;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
     <header>
         <h1><a href=" ">JellyTime 论坛</a ></h1>
-        <div class="login-link">
-            <a href="login.html">手机号登录</a >
+        <div class="user-info" id="user-info">
+            <span>未登录</span>
+            <a href="login.html" class="btn">登录</a >
+            <a href="register.html" class="btn btn-outline">注册</a >
         </div>
     </header>
 
-    <main>
-        <div class="post-detail">
-            <h2 id="post-title">欢迎帖</h2>
-            <p id="post-content">这是我的第一条帖子！🎉 大家可以在这里畅所欲言~</p >
-            <p class="author">by ayamer-shizuku</p >
-        </div>
+    <a href="javascript:void(0)" class="btn post-btn" id="create-post-btn">发布新帖</a >
 
-        <!-- 点赞功能区 -->
-        <div class="like-section">
-            <button id="like-btn">👍 点赞 (0)</button>
-        </div>
+    <!-- 帖子列表 -->
+    <div id="post-list"></div>
 
-        <!-- 评论功能区 -->
-        <div class="comment-section">
-            <h3>评论区</h3>
-            <div id="comments-list"></div>
-
-            <div class="comment-input">
-                <input type="text" id="nickname" placeholder="请输入你的昵称">
-                <textarea id="comment-content" placeholder="请输入你的评论内容"></textarea>
-                <button id="submit-comment">提交评论</button>
+    <!-- 发帖弹窗 -->
+    <div class="modal" id="post-modal">
+        <div class="modal-content">
+            <h2>发布新帖</h2>
+            <div class="form-group">
+                <input type="text" id="post-title" placeholder="请输入帖子标题（必填）">
+            </div>
+            <div class="form-group">
+                <textarea id="post-content" placeholder="请输入帖子内容（必填）"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-post">取消</button>
+                <button class="btn" id="submit-post">发布</button>
             </div>
         </div>
-    </main>
-
-    <footer>
-        <p>© 2026 JellyTime 论坛</p >
-    </footer>
+    </div>
 
     <script>
-        // 1. 加载对应帖子内容
-        const urlParams = new URLSearchParams(window.location.search);
-        const postId = urlParams.get('id') || '1'; // 给默认值防止参数为空
-        if (postId === '2') {
-            document.getElementById('post-title').textContent = '如何使用这个论坛？';
-            document.getElementById('post-content').textContent = '1. 点击点赞按钮支持帖子；2. 输入昵称和评论即可参与讨论；3. 可通过手机号登录绑定账号';
-        }
+        // 元素获取
+        const userInfo = document.getElementById('user-info');
+        const createPostBtn = document.getElementById('create-post-btn');
+        const postModal = document.getElementById('post-modal');
+        const cancelPostBtn = document.getElementById('cancel-post');
+        const submitPostBtn = document.getElementById('submit-post');
+        const postList = document.getElementById('post-list');
+        const postTitleInput = document.getElementById('post-title');
+        const postContentInput = document.getElementById('post-content');
 
-        // 2. 防重复点赞功能 - 核心修复
-        const likeBtn = document.getElementById('like-btn');
-        const likeKey = `liked_${postId}`;
-        let likeCount = localStorage.getItem(`likeCount_${postId}`) || 0;
+        // 本地存储数据
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        let posts = JSON.parse(localStorage.getItem('forumPosts')) || [
+            { id: '1', title: '欢迎来到 JellyTime 论坛', content: '这是论坛的第一条测试帖子，大家可以在这里畅所欲言！🎉', author: '管理员', time: '2026-01-01 10:00' },
+            { id: '2', title: '论坛使用指南', content: '1. 注册账户后可发布新帖；2. 支持上传个人头像；3. 评论和点赞数据保存在本地', author: '管理员', time: '2026-01-02 15:30' }
+        ];
 
-        // 初始化点赞按钮状态
-        likeBtn.textContent = `👍 点赞 (${likeCount})`;
-        if (localStorage.getItem(likeKey)) {
-            likeBtn.disabled = true;
-        }
-
-        // 点赞点击事件
-        likeBtn.addEventListener('click', () => {
-            try {
-                likeCount++;
-                likeBtn.textContent = `👍 点赞 (${likeCount})`;
-                likeBtn.disabled = true;
-                localStorage.setItem(likeKey, 'true');
-                localStorage.setItem(`likeCount_${postId}`, likeCount);
-                alert('点赞成功！');
-            } catch (err) {
-                console.error('点赞失败:', err);
-                alert('点赞出错啦，请刷新页面重试');
-            }
-        });
-
-        // 3. 评论功能 - 核心修复
-        const commentsList = document.getElementById('comments-list');
-        const nicknameInput = document.getElementById('nickname');
-        const commentContent = document.getElementById('comment-content');
-        const submitBtn = document.getElementById('submit-comment');
-        const commentsKey = `comments_${postId}`;
-
-        // 加载评论的函数
-        function loadComments() {
-            try {
-                // 读取本地存储的评论数据
-                const comments = JSON.parse(localStorage.getItem(commentsKey)) || [];
-                if (comments.length === 0) {
-                    commentsList.innerHTML = '<p class="empty-tip">还没有评论，快来抢沙发吧~</p >';
-                    return;
-                }
-                // 渲染评论列表
-                commentsList.innerHTML = '';
-                comments.forEach(comment => {
-                    const commentDiv = document.createElement('div');
-                    commentDiv.className = 'comment-item';
-                    commentDiv.innerHTML = `
-                        <div class="comment-author">${comment.nickname}</div>
-                        <div>${comment.content}</div>
-                        <div class="comment-time">${comment.time}</div>
-                    `;
-                    commentsList.appendChild(commentDiv);
+        // 更新用户登录状态
+        function updateUserStatus() {
+            if (currentUser) {
+                userInfo.innerHTML = `
+                    < img src="${currentUser.avatar || 'https://via.placeholder.com/40'}" class="user-avatar" alt="用户头像">
+                    <span>${currentUser.username}</span>
+                    <button class="btn btn-outline" id="logout-btn">退出</button>
+                `;
+                // 退出登录功能
+                document.getElementById('logout-btn').addEventListener('click', () => {
+                    localStorage.removeItem('currentUser');
+                    alert('退出登录成功！');
+                    window.location.reload();
                 });
-            } catch (err) {
-                console.error('加载评论失败:', err);
-                commentsList.innerHTML = '<p class="empty-tip">加载评论出错啦，请刷新页面</p >';
             }
         }
 
-        // 提交评论的点击事件
-        submitBtn.addEventListener('click', () => {
-            const nickname = nicknameInput.value.trim();
-            const content = commentContent.value.trim();
-
-            // 验证输入
-            if (!nickname) {
-                alert('请输入你的昵称哦！');
+        // 渲染帖子列表
+        function renderPosts() {
+            if (posts.length === 0) {
+                postList.innerHTML = '<div class="empty-tip">暂无帖子，快来发布第一条吧！</div>';
                 return;
             }
-            if (!content) {
-                alert('请输入评论内容哦！');
+            postList.innerHTML = '';
+            posts.forEach(post => {
+                const postItem = document.createElement('div');
+                postItem.className = 'post-item';
+                postItem.innerHTML = `
+                    <h3><a href="post.html?id=${post.id}">${post.title}</a ></h3>
+                    <p>${post.content.length > 60 ? post.content.slice(0, 60) + '...' : post.content}</p >
+                    <div class="post-meta">
+                        <span>作者：${post.author}</span>
+                        <span>时间：${post.time}</span>
+                    </div>
+                `;
+                postList.appendChild(postItem);
+            });
+        }
+
+        // 发帖弹窗控制
+        createPostBtn.addEventListener('click', () => {
+            if (!currentUser) {
+                alert('请先登录再发布帖子！');
+                window.location.href = 'login.html';
                 return;
             }
-
-            try {
-                // 读取现有评论
-                const comments = JSON.parse(localStorage.getItem(commentsKey)) || [];
-                // 添加新评论
-                comments.push({
-                    nickname: nickname,
-                    content: content,
-                    time: new Date().toLocaleString()
-                });
-                // 保存到本地存储
-                localStorage.setItem(commentsKey, JSON.stringify(comments));
-                // 刷新评论列表
-                loadComments();
-                // 清空输入框
-                nicknameInput.value = '';
-                commentContent.value = '';
-                alert('评论提交成功！');
-            } catch (err) {
-                console.error('提交评论失败:', err);
-                alert('评论提交出错啦，请刷新页面重试');
-            }
+            postModal.style.display = 'flex';
+        });
+        cancelPostBtn.addEventListener('click', () => {
+            postModal.style.display = 'none';
+            postTitleInput.value = '';
+            postContentInput.value = '';
         });
 
-        // 页面加载时立即显示评论
-        loadComments();
+        // 提交新帖
+        submitPostBtn.addEventListener('click', () => {
+            const title = postTitleInput.value.trim();
+            const content = postContentInput.value.trim();
+            if (!title || !content) {
+                alert('标题和内容不能为空！');
+                return;
+            }
+            const newPost = {
+                id: Date.now().toString(),
+                title,
+                content,
+                author: currentUser.username,
+                time: new Date().toLocaleString()
+            };
+            posts.unshift(newPost);
+            localStorage.setItem('forumPosts', JSON.stringify(posts));
+            renderPosts();
+            cancelPostBtn.click();
+            alert('帖子发布成功！');
+        });
+
+        // 初始化
+        updateUserStatus();
+        renderPosts();
     </script>
 </body>
 </html>
