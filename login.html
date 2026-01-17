@@ -53,12 +53,22 @@
             font-size: 16px;
             cursor: pointer;
         }
-        .register-link {
+        .login-link {
             text-align: center;
             margin-top: 15px;
             font-size: 14px;
         }
-        .register-link a {
+        .login-link a {
+            color: #4299e1;
+            text-decoration: none;
+        }
+        .forget-pwd {
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+        .forget-pwd a {
             color: #4299e1;
             text-decoration: none;
         }
@@ -93,12 +103,16 @@
             <label for="password">密码</label>
             <input type="password" id="password" placeholder="请输入你的密码">
             <div class="tip" id="password-tip">密码不能为空</div>
+            <!-- 新增：忘记密码链接 -->
+            <div class="forget-pwd">
+                <a href=" ">忘记密码？</a >
+            </div>
         </div>
 
         <button class="btn" id="login-btn">登录</button>
 
-        <div class="register-link">
-            还没有账户？<a href=" ">去注册</a >
+        <div class="login-link">
+            还没有账户？<a href="register.html">去注册</a >
         </div>
 
         <div class="privacy-note">
