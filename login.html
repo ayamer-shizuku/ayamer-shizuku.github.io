@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>注册/登录 - JellyTime 论坛</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .privacy-note {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="index.html">JellyTime 论坛</a></h1>
+    </header>
+    <main>
+        <div class="auth-container">
+            <h2>手机号注册/登录</h2>
+            <input type="tel" id="phone" placeholder="请输入手机号" pattern="1[3-9]\d{9}">
+            <button id="send-code">发送验证码</button>
+            <input type="text" id="code" placeholder="请输入验证码" disabled>
+            <button id="verify-code" disabled>验证并登录</button>
+
+            <div class="privacy-note">
+                📝 JellyTime论坛不会泄露您的任何隐私
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>© 2026 JellyTime 论坛</p>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="
+                  https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js
+                  "></script>
+    <script src="
+                  https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js
+                  "></script>
+
+    <script>
+        // 初始化 Firebase（请替换成你自己的配置）
+        const firebaseConfig = {
+            apiKey: "你的Firebase API Key",
+            authDomain: "你的Firebase Auth Domain",
+            projectId: "你的Firebase Project ID",
+            storageBucket: "你的Firebase Storage Bucket",
+            messagingSenderId: "你的Sender ID",
+            appId: "你的App ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // 页面元素
+        const phoneInput = document.getElementById('phone');
+        const sendCodeBtn = document.getElementById('send-code');
+        const codeInput = document.getElementById('code');
+        const verifyCodeBtn = document.getElementById('verify-code');
+
+        // 发送验证码
+        sendCodeBtn.addEventListener('click', () => {
+            const phone = '+86' + phoneInput.value.trim();
+            if (!/^\+861[3-9]\d{9}$/.test(phone)) {
+                return alert('请输入正确的手机号');
+            }
+            auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
+                .then(confirmationResult => {
+                    window.confirmationResult = confirmationResult;
+                    sendCodeBtn.disabled = true;
+                    codeInput.disabled = false;
+                    verifyCodeBtn.disabled = false;
+                    alert('验证码已发送');
+                })
+                .catch(err => alert('发送失败：' + err.message));
+        });
+
+        // 验证验证码并登录
+        verifyCodeBtn.addEventListener('click', () => {
+            const code = codeInput.value.trim();
+            if (!code) return alert('请输入验证码');
+            window.confirmationResult.confirm(code)
+                .then(result => {
+                    const user = result.user;
+                    alert('登录成功！');
+                    // 登录成功后跳转到论坛首页
+                    window.location.href = 'index.html';
+                })
+                .catch(err => alert('验证失败：' + err.message));
+        });
+
+        // 初始化reCAPTCHA
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('send-code', {
+            'size': 'invisible',
+            'callback': (response) => {
+                // reCAPTCHA验证通过后自动发送验证码
+            }
+        });
+    </script>
+</body>
+</html>
