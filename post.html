@@ -1,112 +1,60 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <title>帖子详情 - JellyTime 论坛</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* 点赞按钮样式优化 */
-        #like-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            background-color: #4299e1;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        #like-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        .post-detail {
-            padding: 16px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-        .like-section {
-            margin-bottom: 30px;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1><a href="index.html">JellyTime 论坛</a></h1>
-    </header>
-    <main>
-        <div class="post-detail">
-            <h2 id="post-title">欢迎帖</h2>
-            <p id="post-content">这是我的第一条帖子！🎉</p>
-            <p class="author">by ayamer-shizuku</p>
-        </div>
-
-        <!-- 点赞按钮区域 -->
-        <div class="like-section">
-            <button id="like-btn">👍 点赞 (0)</button>
-        </div>
-
-        <!-- 评论区：替换下面的script为你从Giscus官网生成的代码 -->
-        <h3>评论区</h3>
-        <div style="border-top: 1px solid #e0e0e0; padding-top: 20px;">
-            <!-- Giscus 评论系统 -->
+<!-- 极简评论区（无需 GitHub 账号） -->
 <h3>评论区</h3>
 <div style="border-top: 1px solid #e0e0e0; padding-top: 20px;">
-    <script src="
-                  https://giscus.app/client.js
-                  "
-            data-repo="ayamer-shizuku/
-                  ayamer-shizuku.github.io
-                  "
-            data-repo-id="R_kgDOMgq7NQ"
-            data-category="General"
-            data-category-id="DIC_kwDOMgq7Nc4Cd5gQ"
-            data-mapping="pathname"
-            data-strict="0"
-            data-reactions-enabled="1"
-            data-emit-metadata="0"
-            data-input-position="bottom"
-            data-theme="light"
-            data-lang="zh-CN"
-            crossorigin="anonymous"
-            async>
-    </script>
+    <div id="comments-list"></div>
+    <div style="margin-top: 20px;">
+        <input type="text" id="nickname" placeholder="你的昵称" style="padding: 8px; width: 200px; margin-right: 8px;">
+        <textarea id="comment-content" placeholder="写下你的评论..." style="padding: 8px; width: 100%; height: 80px; margin: 8px 0;"></textarea>
+        <button id="submit-comment" style="padding: 8px 16px; background-color: #4299e1; color: white; border: none; border-radius: 4px; cursor: pointer;">提交评论</button>
+    </div>
 </div>
-        </div>
-    </main>
-    <footer>
-        <p>© 2026 JellyTime 论坛</p>
-    </footer>
 
-    <script>
-        // 根据URL参数加载对应帖子
-        const urlParams = new URLSearchParams(window.location.search);
-        const postId = urlParams.get('id');
-        if (postId === '2') {
-            document.getElementById('post-title').textContent = '如何使用这个论坛？';
-            document.getElementById('post-content').textContent = '你可以在这里发帖、回复，和大家交流！';
-        }
+<script>
+    // 评论功能（基于本地存储，刷新页面后不丢失）
+    const commentsList = document.getElementById('comments-list');
+    const nicknameInput = document.getElementById('nickname');
+    const commentContent = document.getElementById('comment-content');
+    const submitBtn = document.getElementById('submit-comment');
+    const postId = urlParams.get('id');
+    const commentsKey = `comments_${postId}`;
 
-        // 防重复点赞功能（基于本地存储，刷新不丢失）
-        const likeBtn = document.getElementById('like-btn');
-        const likeKey = `liked_${postId}`; // 不同帖子独立记录点赞状态
-        let likeCount = localStorage.getItem(`likeCount_${postId}`) || 0;
-
-        // 页面加载时恢复点赞状态和计数
-        likeBtn.textContent = `👍 点赞 (${likeCount})`;
-        if (localStorage.getItem(likeKey)) {
-            likeBtn.disabled = true;
-        }
-
-        // 点赞按钮点击事件
-        likeBtn.addEventListener('click', () => {
-            likeCount++;
-            likeBtn.textContent = `👍 点赞 (${likeCount})`;
-            likeBtn.disabled = true;
-            // 保存状态到本地存储
-            localStorage.setItem(likeKey, 'true');
-            localStorage.setItem(`likeCount_${postId}`, likeCount);
+    // 加载已有评论
+    function loadComments() {
+        const comments = JSON.parse(localStorage.getItem(commentsKey)) || [];
+        commentsList.innerHTML = '';
+        comments.forEach(comment => {
+            const commentElement = document.createElement('div');
+            commentElement.style.padding = '12px';
+            commentElement.style.border = '1px solid #e0e0e0';
+            commentElement.style.borderRadius = '4px';
+            commentElement.style.marginBottom = '8px';
+            commentElement.innerHTML = `
+                <strong>${comment.nickname}</strong>
+                <p style="margin: 4px 0;">${comment.content}</p>
+                <small style="color: #666;">${comment.time}</small>
+            `;
+            commentsList.appendChild(commentElement);
         });
-    </script>
-</body>
-</html>
+    }
+
+    // 提交评论
+    submitBtn.addEventListener('click', () => {
+        const nickname = nicknameInput.value.trim();
+        const content = commentContent.value.trim();
+        if (!nickname || !content) return alert('请填写昵称和评论内容！');
+
+        const comments = JSON.parse(localStorage.getItem(commentsKey)) || [];
+        comments.push({
+            nickname,
+            content,
+            time: new Date().toLocaleString()
+        });
+        localStorage.setItem(commentsKey, JSON.stringify(comments));
+        loadComments();
+        nicknameInput.value = '';
+        commentContent.value = '';
+    });
+
+    // 页面加载时显示评论
+    loadComments();
+</script>
