@@ -138,6 +138,12 @@
             background: #fff;
             border-radius: 8px;
         }
+        .admin-tag {
+            color: #ff4444;
+            font-size: 12px;
+            margin-left: 5px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -190,12 +196,18 @@
             { id: '2', title: '论坛使用指南', content: '1. 注册账户后可发布新帖；2. 支持上传个人头像；3. 评论和点赞数据保存在本地', author: '管理员', time: '2026-01-02 15:30' }
         ];
 
-        // 更新用户登录状态
+        // 更新用户登录状态（带站长标识）
         function updateUserStatus() {
             if (currentUser) {
+                // 检测是否是站长邮箱
+                const isAdmin = currentUser.email === 'jellytime_official@163.com';
+                const usernameDisplay = isAdmin 
+                    ? `${currentUser.username} <span class="admin-tag">本站站长</span>` 
+                    : currentUser.username;
+
                 userInfo.innerHTML = `
                     < img src="${currentUser.avatar || 'https://via.placeholder.com/40'}" class="user-avatar" alt="用户头像">
-                    <span>${currentUser.username}</span>
+                    <span>${usernameDisplay}</span>
                     <button class="btn btn-outline" id="logout-btn">退出</button>
                 `;
                 // 退出登录功能
