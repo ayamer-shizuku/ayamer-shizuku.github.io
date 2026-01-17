@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>注册/登录 - JellyTime 论坛</title>
+    <title>登录 - JellyTime 论坛</title>
     <style>
         * {
             margin: 0;
@@ -11,139 +11,149 @@
             font-family: "Microsoft Yahei", sans-serif;
         }
         body {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 0 20px;
             background-color: #f7f8fa;
-            padding: 2rem;
         }
-        .login-container {
-            max-width: 420px;
-            margin: 3rem auto;
+        .login-box {
             background: #fff;
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
         }
-        .logo {
+        h1 {
             text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .logo a {
-            font-size: 1.8rem;
             color: #4299e1;
-            text-decoration: none;
-            font-weight: bold;
+            margin-bottom: 25px;
         }
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 18px;
         }
-        .form-group label {
+        label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 6px;
             color: #333;
-            font-size: 0.9rem;
+            font-size: 14px;
         }
-        .form-group input {
+        input {
             width: 100%;
-            padding: 0.9rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
         }
         .btn {
             width: 100%;
-            padding: 0.9rem;
+            padding: 12px;
             background-color: #4299e1;
             color: #fff;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 6px;
+            font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 0.5rem;
         }
-        .btn:disabled {
-            background-color: #c9cdd4;
-            cursor: not-allowed;
-        }
-        .privacy-notice {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background-color: #f0f7ff;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: #64748b;
+        .register-link {
             text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .register-link a {
+            color: #4299e1;
+            text-decoration: none;
+        }
+        .privacy-note {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f7ff;
+            border-radius: 6px;
         }
         .tip {
-            color: #ef4444;
-            font-size: 0.8rem;
-            margin-top: 0.3rem;
+            color: #ff4444;
+            font-size: 12px;
+            margin-top: 5px;
             display: none;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo">
-            <a href=" ">JellyTime 论坛</a >
-        </div>
-        <div class="form-group">
-            <label for="phone">手机号</label>
-            <input type="tel" id="phone" placeholder="请输入11位手机号" maxlength="11">
-            <div class="tip" id="phone-tip">请输入有效的11位手机号</div>
-        </div>
-        <button class="btn" id="send-code">发送验证码</button>
-        <div class="form-group" style="margin-top: 1.2rem;">
-            <label for="code">验证码</label>
-            <input type="text" id="code" placeholder="请输入6位验证码" maxlength="6" disabled>
-        </div>
-        <button class="btn" id="submit" disabled>登录/注册</button>
+    <div class="login-box">
+        <h1>JellyTime 论坛登录</h1>
 
-        <div class="privacy-notice">
+        <div class="form-group">
+            <label for="email">邮箱</label>
+            <input type="email" id="email" placeholder="请输入你的邮箱">
+            <div class="tip" id="email-tip">请输入有效的邮箱地址</div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">密码</label>
+            <input type="password" id="password" placeholder="请输入你的密码">
+            <div class="tip" id="password-tip">密码不能为空</div>
+        </div>
+
+        <button class="btn" id="login-btn">登录</button>
+
+        <div class="register-link">
+            还没有账户？<a href=" ">去注册</a >
+        </div>
+
+        <div class="privacy-note">
             📝 JellyTime论坛不会泄露您的任何隐私
         </div>
     </div>
 
     <script>
         // 页面元素
-        const phoneInput = document.getElementById('phone');
-        const sendCodeBtn = document.getElementById('send-code');
-        const codeInput = document.getElementById('code');
-        const submitBtn = document.getElementById('submit');
-        const phoneTip = document.getElementById('phone-tip');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('login-btn');
+        const emailTip = document.getElementById('email-tip');
+        const passwordTip = document.getElementById('password-tip');
 
-        // 手机号格式验证
-        phoneInput.addEventListener('input', () => {
-            const phone = phoneInput.value.trim();
-            const isValid = /^1[3-9]\d{9}$/.test(phone);
-            sendCodeBtn.disabled = !isValid;
-            phoneTip.style.display = isValid ? 'none' : 'block';
-        });
+        // 表单验证
+        function validateForm() {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            let isValid = true;
 
-        // 发送验证码（测试模式）
-        sendCodeBtn.addEventListener('click', () => {
-            const phone = phoneInput.value.trim();
-            alert(`测试验证码已发送：123456（仅用于测试）`);
-            phoneInput.disabled = true;
-            codeInput.disabled = false;
-            submitBtn.disabled = false;
-        });
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                emailTip.style.display = 'block';
+                isValid = false;
+            } else {
+                emailTip.style.display = 'none';
+            }
 
-        // 验证登录
-        submitBtn.addEventListener('click', () => {
-            const code = codeInput.value.trim();
-            if (code === '123456') {
-                localStorage.setItem('loggedIn', 'true');
-                localStorage.setItem('userPhone', phoneInput.value.trim());
-                alert('登录成功！即将返回论坛首页');
+            if (!password) {
+                passwordTip.style.display = 'block';
+                isValid = false;
+            } else {
+                passwordTip.style.display = 'none';
+            }
+
+            return isValid;
+        }
+
+        // 实时验证
+        emailInput.addEventListener('input', validateForm);
+        passwordInput.addEventListener('input', validateForm);
+
+        // 登录验证
+        loginBtn.addEventListener('click', () => {
+            if (!validateForm()) return;
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            const savedUser = JSON.parse(localStorage.getItem('currentUser'));
+
+            if (savedUser && savedUser.email === email && savedUser.password === password) {
+                alert('登录成功！');
                 window.location.href = 'index.html';
             } else {
-                alert('验证码错误，请重新输入');
+                alert('邮箱或密码错误，请重试');
             }
         });
     </script>
