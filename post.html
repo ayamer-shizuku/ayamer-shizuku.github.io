@@ -4,6 +4,31 @@
     <meta charset="UTF-8">
     <title>帖子详情 - JellyTime 论坛</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* 点赞按钮样式优化 */
+        #like-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4299e1;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        #like-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .post-detail {
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .like-section {
+            margin-bottom: 30px;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -16,46 +41,44 @@
             <p class="author">by ayamer-shizuku</p>
         </div>
 
-        <!-- 点赞按钮 -->
+        <!-- 点赞按钮区域 -->
         <div class="like-section">
             <button id="like-btn">👍 点赞 (0)</button>
         </div>
 
-        <!-- Giscus 评论系统 -->
+        <!-- 评论区：替换下面的script为你从Giscus官网生成的代码 -->
         <h3>评论区</h3>
-        <script src="
+        <div style="border-top: 1px solid #e0e0e0; padding-top: 20px;">
+            <!-- Giscus 评论系统 -->
+<h3>评论区</h3>
+<div style="border-top: 1px solid #e0e0e0; padding-top: 20px;">
+    <script src="
                   https://giscus.app/client.js
                   "
-                data-repo="ayamer-shizuku/
+            data-repo="ayamer-shizuku/
                   ayamer-shizuku.github.io
                   "
-                data-repo-id="你的仓库ID"
-                data-category="General"
-                data-category-id="你的分类ID"
-                data-mapping="pathname"
-                data-strict="0"
-                data-reactions-enabled="1"
-                data-emit-metadata="0"
-                data-input-position="bottom"
-                data-theme="light"
-                data-lang="zh-CN"
-                crossorigin="anonymous"
-                async>
-        </script>
+            data-repo-id="R_kgDOMgq7NQ"
+            data-category="General"
+            data-category-id="DIC_kwDOMgq7Nc4Cd5gQ"
+            data-mapping="pathname"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="bottom"
+            data-theme="light"
+            data-lang="zh-CN"
+            crossorigin="anonymous"
+            async>
+    </script>
+</div>
+        </div>
     </main>
     <footer>
         <p>© 2026 JellyTime 论坛</p>
     </footer>
 
     <script>
-        // 简单的点赞功能（刷新页面后会重置，后续用Firebase实现持久化）
-        const likeBtn = document.getElementById('like-btn');
-        let likeCount = 0;
-        likeBtn.addEventListener('click', () => {
-            likeCount++;
-            likeBtn.textContent = `👍 点赞 (${likeCount})`;
-        });
-
         // 根据URL参数加载对应帖子
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('id');
@@ -63,6 +86,27 @@
             document.getElementById('post-title').textContent = '如何使用这个论坛？';
             document.getElementById('post-content').textContent = '你可以在这里发帖、回复，和大家交流！';
         }
+
+        // 防重复点赞功能（基于本地存储，刷新不丢失）
+        const likeBtn = document.getElementById('like-btn');
+        const likeKey = `liked_${postId}`; // 不同帖子独立记录点赞状态
+        let likeCount = localStorage.getItem(`likeCount_${postId}`) || 0;
+
+        // 页面加载时恢复点赞状态和计数
+        likeBtn.textContent = `👍 点赞 (${likeCount})`;
+        if (localStorage.getItem(likeKey)) {
+            likeBtn.disabled = true;
+        }
+
+        // 点赞按钮点击事件
+        likeBtn.addEventListener('click', () => {
+            likeCount++;
+            likeBtn.textContent = `👍 点赞 (${likeCount})`;
+            likeBtn.disabled = true;
+            // 保存状态到本地存储
+            localStorage.setItem(likeKey, 'true');
+            localStorage.setItem(`likeCount_${postId}`, likeCount);
+        });
     </script>
 </body>
 </html>
