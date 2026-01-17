@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>帖子详情 - JellyTime 论坛</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1><a href="index.html">JellyTime 论坛</a></h1>
+    </header>
+    <main>
+        <div class="post-detail">
+            <h2 id="post-title">欢迎帖</h2>
+            <p id="post-content">这是我的第一条帖子！🎉</p>
+            <p class="author">by ayamer-shizuku</p>
+        </div>
+
+        <!-- 点赞按钮 -->
+        <div class="like-section">
+            <button id="like-btn">👍 点赞 (0)</button>
+        </div>
+
+        <!-- Giscus 评论系统 -->
+        <h3>评论区</h3>
+        <script src="
+                  https://giscus.app/client.js
+                  "
+                data-repo="ayamer-shizuku/
+                  ayamer-shizuku.github.io
+                  "
+                data-repo-id="你的仓库ID"
+                data-category="General"
+                data-category-id="你的分类ID"
+                data-mapping="pathname"
+                data-strict="0"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="bottom"
+                data-theme="light"
+                data-lang="zh-CN"
+                crossorigin="anonymous"
+                async>
+        </script>
+    </main>
+    <footer>
+        <p>© 2026 JellyTime 论坛</p>
+    </footer>
+
+    <script>
+        // 简单的点赞功能（刷新页面后会重置，后续用Firebase实现持久化）
+        const likeBtn = document.getElementById('like-btn');
+        let likeCount = 0;
+        likeBtn.addEventListener('click', () => {
+            likeCount++;
+            likeBtn.textContent = `👍 点赞 (${likeCount})`;
+        });
+
+        // 根据URL参数加载对应帖子
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+        if (postId === '2') {
+            document.getElementById('post-title').textContent = '如何使用这个论坛？';
+            document.getElementById('post-content').textContent = '你可以在这里发帖、回复，和大家交流！';
+        }
+    </script>
+</body>
+</html>
