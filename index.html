@@ -144,6 +144,88 @@
             margin-left: 5px;
             font-weight: bold;
         }
+        /* 悬浮邮件图标样式 - 恢复论坛主色调 */
+        .email-float-btn {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #4299e1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+        .email-float-btn:hover {
+            background-color: #3182ce;
+        }
+        /* 建议表单弹窗样式 */
+        .email-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+        .email-modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+        }
+        .email-modal-content h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .email-modal-content .form-group {
+            margin-bottom: 15px;
+        }
+        .email-modal-content input,
+        .email-modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .email-modal-content textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .email-modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .email-modal-footer button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #4299e1;
+            color: #fff;
+        }
+        .btn-secondary {
+            background-color: #ddd;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -178,6 +260,26 @@
         </div>
     </div>
 
+    <!-- 悬浮邮件图标 -->
+    <div class="email-float-btn" id="emailBtn">✉️</div>
+
+    <!-- 建议提交弹窗 -->
+    <div class="email-modal" id="emailModal">
+        <div class="email-modal-content">
+            <h3>给站长提建议</h3>
+            <div class="form-group">
+                <input type="text" id="suggestTitle" placeholder="建议标题（选填）">
+            </div>
+            <div class="form-group">
+                <textarea id="suggestContent" placeholder="请输入你的建议内容（必填）"></textarea>
+            </div>
+            <div class="email-modal-footer">
+                <button class="btn-secondary" id="closeModalBtn">取消</button>
+                <button class="btn-primary" id="sendSuggestBtn">发送建议</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 元素获取
         const userInfo = document.getElementById('user-info');
@@ -192,7 +294,7 @@
         // 本地存储数据
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         let posts = JSON.parse(localStorage.getItem('forumPosts')) || [
-            { id: '1', title: '欢迎来到 JellyTime 论坛', content: '这是论坛的第一条测试帖子，大家可以在这里畅所欲言！🎉', author: '管理员', time: '2026-01-01 10:00' },
+            { id: '1', title: '欢迎来到 JellyTime 论坛', content: '这是论坛的第一条测试帖子，大家可以畅所欲言！🎉', author: '管理员', time: '2026-01-01 10:00' },
             { id: '2', title: '论坛使用指南', content: '1. 注册账户后可发布新帖；2. 支持上传个人头像；3. 评论和点赞数据保存在本地', author: '管理员', time: '2026-01-02 15:30' }
         ];
 
@@ -276,6 +378,53 @@
             renderPosts();
             cancelPostBtn.click();
             alert('帖子发布成功！');
+        });
+
+        // 邮件建议功能逻辑
+        const emailBtn = document.getElementById('emailBtn');
+        const emailModal = document.getElementById('emailModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const sendSuggestBtn = document.getElementById('sendSuggestBtn');
+        const suggestTitle = document.getElementById('suggestTitle');
+        const suggestContent = document.getElementById('suggestContent');
+
+        // 打开建议弹窗
+        emailBtn.addEventListener('click', () => {
+            emailModal.style.display = 'flex';
+        });
+
+        // 关闭建议弹窗
+        closeModalBtn.addEventListener('click', () => {
+            emailModal.style.display = 'none';
+            suggestTitle.value = '';
+            suggestContent.value = '';
+        });
+
+        // 点击弹窗外部关闭
+        emailModal.addEventListener('click', (e) => {
+            if (e.target === emailModal) {
+                emailModal.style.display = 'none';
+                suggestTitle.value = '';
+                suggestContent.value = '';
+            }
+        });
+
+        // 发送建议到原邮箱
+        sendSuggestBtn.addEventListener('click', () => {
+            const title = suggestTitle.value.trim() || 'JellyTime 论坛建议';
+            const content = suggestContent.value.trim();
+            if (!content) {
+                alert('建议内容不能为空！');
+                return;
+            }
+            // 改回你的原邮箱
+            const yourEmail = 'jellytime_official@163.com';
+            const mailtoLink = `mailto:${yourEmail}?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(content)}`;
+            window.open(mailtoLink);
+            alert('已为你打开邮箱客户端，请确认发送！');
+            emailModal.style.display = 'none';
+            suggestTitle.value = '';
+            suggestContent.value = '';
         });
 
         // 初始化
