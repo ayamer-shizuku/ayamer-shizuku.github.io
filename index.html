@@ -3,27 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <title>JellyTime 论坛</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7f8fa;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        h1 a {
+            color: #4299e1;
+            text-decoration: none;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #4299e1;
+        }
+        .btn {
+            padding: 8px 16px;
+            background-color: #4299e1;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .btn-outline {
+            background-color: transparent;
+            color: #4299e1;
+            border: 1px solid #4299e1;
+        }
+        .post-btn {
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .post-item {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: box-shadow 0.3s;
+        }
+        .post-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .post-item h3 {
+            margin-bottom: 10px;
+        }
+        .post-item a {
+            color: #333;
+            text-decoration: none;
+        }
+        .post-item a:hover {
+            color: #4299e1;
+        }
+        .post-meta {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            display: flex;
+            gap: 15px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 18px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .empty-tip {
+            text-align: center;
+            color: #999;
+            padding: 40px 0;
+            background: #fff;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1>JellyTime 论坛</h1>
-        <p>欢迎来到我的第一个论坛！🎉</p>
+        <h1><a href=" ">JellyTime 论坛</a ></h1>
+        <div class="user-info" id="user-info">
+            <span>未登录</span>
+            <a href="login.html" class="btn">登录</a >
+            <a href="register.html" class="btn btn-outline">注册</a >
+        </div>
     </header>
-    <main>
-        <div class="post">
-            <h2><a href="post.html?id=1">欢迎帖</a></h2>
-            <p>这是我的第一条帖子！🎉</p>
-            <p class="author">by ayamer-shizuku</p>
+
+    <a href="javascript:void(0)" class="btn post-btn" id="create-post-btn">发布新帖</a >
+
+    <!-- 帖子列表 -->
+    <div id="post-list"></div>
+
+    <!-- 发帖弹窗 -->
+    <div class="modal" id="post-modal">
+        <div class="modal-content">
+            <h2>发布新帖</h2>
+            <div class="form-group">
+                <input type="text" id="post-title" placeholder="请输入帖子标题（必填）">
+            </div>
+            <div class="form-group">
+                <textarea id="post-content" placeholder="请输入帖子内容（必填）"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-post">取消</button>
+                <button class="btn" id="submit-post">发布</button>
+            </div>
         </div>
-        <div class="post">
-            <h2><a href="post.html?id=2">如何使用这个论坛？</a></h2>
-            <p>你可以在这里发帖、回复，和大家交流！</p>
-            <p class="author">by ayamer-shizuku</p>
-        </div>
-    </main>
-    <footer>
-        <p>© 2026 JellyTime 论坛</p>
-    </footer>
+    </div>
+
+    <script>
+        // 元素获取
+        const userInfo = document.getElementById('user-info');
+        const createPostBtn = document.getElementById('create-post-btn');
+        const postModal = document.getElementById('post-modal');
+        const cancelPostBtn = document.getElementById('cancel-post');
+        const submitPostBtn = document.getElementById('submit-post');
+        const postList = document.getElementById('post-list');
+        const postTitleInput = document.getElementById('post-title');
+        const postContentInput = document.getElementById('post-content');
+
+        // 本地存储数据
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        let posts = JSON.parse(localStorage.getItem('forumPosts')) || [
+            { id: '1', title: '欢迎来到 JellyTime 论坛', content: '这是论坛的第一条测试帖子，大家可以在这里畅所欲言！🎉', author: '管理员', time: '2026-01-01 10:00' },
+            { id: '2', title: '论坛使用指南', content: '1. 注册账户后可发布新帖；2. 支持上传个人头像；3. 评论和点赞数据保存在本地', author: '管理员', time: '2026-01-02 15:30' }
+        ];
+
+        // 更新用户登录状态
+        function updateUserStatus() {
+            if (currentUser) {
+                userInfo.innerHTML = `
+                    < img src="${currentUser.avatar || 'https://via.placeholder.com/40'}" class="user-avatar" alt="用户头像">
+                    <span>${currentUser.username}</span>
+                    <button class="btn btn-outline" id="logout-btn">退出</button>
+                `;
+                // 退出登录功能
+                document.getElementById('logout-btn').addEventListener('click', () => {
+                    localStorage.removeItem('currentUser');
+                    alert('退出登录成功！');
+                    window.location.reload();
+                });
+            }
+        }
+
+        // 渲染帖子列表
+        function renderPosts() {
+            if (posts.length === 0) {
+                postList.innerHTML = '<div class="empty-tip">暂无帖子，快来发布第一条吧！</div>';
+                return;
+            }
+            postList.innerHTML = '';
+            posts.forEach(post => {
+                const postItem = document.createElement('div');
+                postItem.className = 'post-item';
+                postItem.innerHTML = `
+                    <h3><a href="post.html?id=${post.id}">${post.title}</a ></h3>
+                    <p>${post.content.length > 60 ? post.content.slice(0, 60) + '...' : post.content}</p >
+                    <div class="post-meta">
+                        <span>作者：${post.author}</span>
+                        <span>时间：${post.time}</span>
+                    </div>
+                `;
+                postList.appendChild(postItem);
+            });
+        }
+
+        // 发帖弹窗控制
+        createPostBtn.addEventListener('click', () => {
+            if (!currentUser) {
+                alert('请先登录再发布帖子！');
+                window.location.href = 'login.html';
+                return;
+            }
+            postModal.style.display = 'flex';
+        });
+        cancelPostBtn.addEventListener('click', () => {
+            postModal.style.display = 'none';
+            postTitleInput.value = '';
+            postContentInput.value = '';
+        });
+
+        // 提交新帖
+        submitPostBtn.addEventListener('click', () => {
+            const title = postTitleInput.value.trim();
+            const content = postContentInput.value.trim();
+            if (!title || !content) {
+                alert('标题和内容不能为空！');
+                return;
+            }
+            const newPost = {
+                id: Date.now().toString(),
+                title,
+                content,
+                author: currentUser.username,
+                time: new Date().toLocaleString()
+            };
+            posts.unshift(newPost);
+            localStorage.setItem('forumPosts', JSON.stringify(posts));
+            renderPosts();
+            cancelPostBtn.click();
+            alert('帖子发布成功！');
+        });
+
+        // 初始化
+        updateUserStatus();
+        renderPosts();
+    </script>
 </body>
 </html>
