@@ -144,7 +144,7 @@
             margin-left: 5px;
             font-weight: bold;
         }
-        /* 悬浮邮件图标样式 - 恢复论坛主色调 */
+        /* 悬浮邮件图标样式 */
         .email-float-btn {
             position: fixed;
             right: 20px;
@@ -226,6 +226,34 @@
             background-color: #ddd;
             color: #333;
         }
+
+        /* --- 新增：手机适配样式 --- */
+        .is-mobile body {
+            max-width: 100%;
+            padding: 10px;
+        }
+        .is-mobile .post-item {
+            padding: 15px;
+        }
+        .is-mobile .btn {
+            padding: 12px 20px;
+            font-size: 16px;
+        }
+        .is-mobile .form-group input,
+        .is-mobile .form-group textarea {
+            padding: 12px;
+            font-size: 16px;
+        }
+        .is-mobile .email-float-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+        }
+        .is-mobile .modal-content,
+        .is-mobile .email-modal-content {
+            width: 95%;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
@@ -273,7 +301,7 @@
             <div class="form-group">
                 <textarea id="suggestContent" placeholder="请输入你的建议内容（必填）"></textarea>
             </div>
-            <div class="email-modal-footer">
+            <div class="modal-footer">
                 <button class="btn-secondary" id="closeModalBtn">取消</button>
                 <button class="btn-primary" id="sendSuggestBtn">发送建议</button>
             </div>
@@ -281,7 +309,25 @@
     </div>
 
     <script>
-        // 元素获取
+        // --- 新增：设备检测插件 ---
+        (function() {
+            function detectDevice() {
+                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+                const body = document.body;
+                if (isMobile) {
+                    body.classList.add('is-mobile');
+                    body.classList.remove('is-desktop');
+                } else {
+                    body.classList.add('is-desktop');
+                    body.classList.remove('is-mobile');
+                }
+            }
+            window.addEventListener('DOMContentLoaded', detectDevice);
+            window.addEventListener('resize', detectDevice);
+        })();
+
+        // 原有功能代码
         const userInfo = document.getElementById('user-info');
         const createPostBtn = document.getElementById('create-post-btn');
         const postModal = document.getElementById('post-modal');
@@ -291,17 +337,14 @@
         const postTitleInput = document.getElementById('post-title');
         const postContentInput = document.getElementById('post-content');
 
-        // 本地存储数据
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         let posts = JSON.parse(localStorage.getItem('forumPosts')) || [
-            { id: '1', title: '欢迎来到 JellyTime 论坛', content: '这是论坛的第一条测试帖子，大家可以畅所欲言！🎉', author: '管理员', time: '2026-01-01 10:00' },
+            { id: '1', title: '欢迎来到 JellyTime 论坛', content: '这是论坛的第一条测试帖子，大家可以在这里畅所欲言！🎉', author: '管理员', time: '2026-01-01 10:00' },
             { id: '2', title: '论坛使用指南', content: '1. 注册账户后可发布新帖；2. 支持上传个人头像；3. 评论和点赞数据保存在本地', author: '管理员', time: '2026-01-02 15:30' }
         ];
 
-        // 更新用户登录状态（带站长标识）
         function updateUserStatus() {
             if (currentUser) {
-                // 检测是否是站长邮箱
                 const isAdmin = currentUser.email === 'jellytime_official@163.com';
                 const usernameDisplay = isAdmin 
                     ? `${currentUser.username} <span class="admin-tag">本站站长</span>` 
@@ -312,7 +355,6 @@
                     <span>${usernameDisplay}</span>
                     <button class="btn btn-outline" id="logout-btn">退出</button>
                 `;
-                // 退出登录功能
                 document.getElementById('logout-btn').addEventListener('click', () => {
                     localStorage.removeItem('currentUser');
                     alert('退出登录成功！');
@@ -321,7 +363,6 @@
             }
         }
 
-        // 渲染帖子列表
         function renderPosts() {
             if (posts.length === 0) {
                 postList.innerHTML = '<div class="empty-tip">暂无帖子，快来发布第一条吧！</div>';
@@ -343,7 +384,6 @@
             });
         }
 
-        // 发帖弹窗控制
         createPostBtn.addEventListener('click', () => {
             if (!currentUser) {
                 alert('请先登录再发布帖子！');
@@ -358,7 +398,6 @@
             postContentInput.value = '';
         });
 
-        // 提交新帖
         submitPostBtn.addEventListener('click', () => {
             const title = postTitleInput.value.trim();
             const content = postContentInput.value.trim();
@@ -380,7 +419,7 @@
             alert('帖子发布成功！');
         });
 
-        // 邮件建议功能逻辑
+        // 邮件建议功能
         const emailBtn = document.getElementById('emailBtn');
         const emailModal = document.getElementById('emailModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
@@ -388,19 +427,16 @@
         const suggestTitle = document.getElementById('suggestTitle');
         const suggestContent = document.getElementById('suggestContent');
 
-        // 打开建议弹窗
         emailBtn.addEventListener('click', () => {
             emailModal.style.display = 'flex';
         });
 
-        // 关闭建议弹窗
         closeModalBtn.addEventListener('click', () => {
             emailModal.style.display = 'none';
             suggestTitle.value = '';
             suggestContent.value = '';
         });
 
-        // 点击弹窗外部关闭
         emailModal.addEventListener('click', (e) => {
             if (e.target === emailModal) {
                 emailModal.style.display = 'none';
@@ -409,7 +445,6 @@
             }
         });
 
-        // 发送建议到原邮箱
         sendSuggestBtn.addEventListener('click', () => {
             const title = suggestTitle.value.trim() || 'JellyTime 论坛建议';
             const content = suggestContent.value.trim();
@@ -417,7 +452,6 @@
                 alert('建议内容不能为空！');
                 return;
             }
-            // 改回你的原邮箱
             const yourEmail = 'jellytime_official@163.com';
             const mailtoLink = `mailto:${yourEmail}?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(content)}`;
             window.open(mailtoLink);
