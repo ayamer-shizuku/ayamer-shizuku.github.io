@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>华容道 - JellyTime 论坛</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7f8fa;
+            padding-bottom: 80px; /* 为底部导航栏预留空间 */
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        h1 a {
+            color: #4299e1;
+            text-decoration: none;
+        }
+        .game-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .game-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .level-selector {
+            margin-bottom: 20px;
+        }
+        .level-btn {
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #4299e1;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .level-btn.active {
+            background-color: #3182ce;
+        }
+        .board {
+            display: inline-grid;
+            grid-template-columns: repeat(4, 80px);
+            grid-template-rows: repeat(5, 80px);
+            gap: 2px;
+            background-color: #333;
+            padding: 2px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .tile {
+            background-color: #4299e1;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .tile:hover {
+            background-color: #3182ce;
+        }
+        .tile.empty {
+            background-color: #f7f8fa;
+            cursor: default;
+        }
+        .tile.empty:hover {
+            background-color: #f7f8fa;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #4299e1;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #3182ce;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #4299e1;
+            font-weight: bold;
+        }
+
+        /* 底部导航栏样式 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #fff;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 998;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 12px;
+        }
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .nav-item.active {
+            color: #4299e1;
+        }
+
+        /* 手机适配样式 */
+        .is-mobile body {
+            max-width: 100%;
+            padding: 10px;
+        }
+        .is-mobile .game-container {
+            padding: 20px;
+        }
+        .is-mobile .board {
+            grid-template-columns: repeat(4, 70px);
+            grid-template-rows: repeat(5, 70px);
+        }
+        .is-mobile .tile {
+            font-size: 20px;
+        }
+        .is-mobile .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href=" ">JellyTime 论坛</a ></h1>
+    </header>
+
+    <div class="game-container">
+        <h2>华容道游戏</h2>
+        <div class="level-selector">
+            <button class="level-btn active" data-level="1">1</button>
+            <button class="level-btn" data-level="2">2</button>
+            <button class="level-btn" data-level="3">3</button>
+            <!-- 更多关卡按钮... -->
+        </div>
+        <div class="board" id="board"></div>
+        <div class="controls">
+            <button class="btn" id="restartBtn">重新开始</button>
+            <button class="btn" id="hintBtn">提示</button>
+        </div>
+        <div class="message" id="message"></div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">首页</span>
+        </a >
+        <a href="login.html" class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">登录</span>
+        </a >
+        <a href="game.html" class="nav-item active">
+            <span class="nav-icon">🎮</span>
+            <span class="nav-text">游戏</span>
+        </a >
+    </nav>
+
+    <script>
+        // --- 设备检测插件 ---
+        (function() {
+            function detectDevice() {
+                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+                const body = document.body;
+                if (isMobile) {
+                    body.classList.add('is-mobile');
+                    body.classList.remove('is-desktop');
+                } else {
+                    body.classList.add('is-desktop');
+                    body.classList.remove('is-mobile');
+                }
+            }
+            window.addEventListener('DOMContentLoaded', detectDevice);
+            window.addEventListener('resize', detectDevice);
+        })();
+
+        // 华容道游戏逻辑
+        const board = document.getElementById('board');
+        const message = document.getElementById('message');
+        const restartBtn = document.getElementById('restartBtn');
+        const hintBtn = document.getElementById('hintBtn');
+        const levelBtns = document.querySelectorAll('.level-btn');
+
+        // 游戏数据
+        let currentLevel = 1;
+        let tiles = [];
+        let emptyPos = { row: 4, col: 3 }; // 初始空白位置
+
+        // 关卡数据（示例，你可以扩展到20关）
+        const levels = [
+            // 第1关
+            [
+                [1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12],
+                [13, 14, 15, 0]
+            ],
+            // 第2关
+            [
+                [2, 1, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12],
+                [13, 14, 15, 0]
+            ],
+            // 更多关卡...
+        ];
+
+        // 初始化游戏
+        function initGame(level) {
+            currentLevel = level;
+            tiles = levels[level - 1].map(row => [...row]);
+            emptyPos = findEmptyPos();
+            renderBoard();
+            message.textContent = '';
+            updateLevelButtons();
+        }
+
+        // 找到空白位置
+        function findEmptyPos() {
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 4; col++) {
+                    if (tiles[row][col] === 0) {
+                        return { row, col };
+                    }
+                }
+            }
+            return { row: 0, col: 0 };
+        }
+
+        // 渲染游戏板
+        function renderBoard() {
+            board.innerHTML = '';
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 4; col++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    if (tiles[row][col] === 0) {
+                        tile.classList.add('empty');
+                    } else {
+                        tile.textContent = tiles[row][col];
+                        tile.addEventListener('click', () => moveTile(row, col));
+                    }
+                    board.appendChild(tile);
+                }
+            }
+        }
+
+        // 移动方块
+        function moveTile(row, col) {
+            // 检查是否可以移动
+            if (
+                (row === emptyPos.row && Math.abs(col - emptyPos.col) === 1) ||
+                (col === emptyPos.col && Math.abs(row - emptyPos.row) === 1)
+            ) {
+                // 交换位置
+                [tiles[row][col], tiles[emptyPos.row][emptyPos.col]] = 
+                [tiles[emptyPos.row][emptyPos.col], tiles[row][col]];
+                emptyPos = { row, col };
+                renderBoard();
+                checkWin();
+            }
+        }
+
+        // 检查是否获胜
+        function checkWin() {
+            const winPattern = [
+                [1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12],
+                [13, 14, 15, 0]
+            ];
+
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 4; col++) {
+                    if (tiles[row][col] !== winPattern[row][col]) {
+                        return false;
+                    }
+                }
+            }
+
+            message.textContent = `恭喜！你通过了第${currentLevel}关！`;
+            if (currentLevel < levels.length) {
+                setTimeout(() => {
+                    initGame(currentLevel + 1);
+                }, 2000);
+            } else {
+                message.textContent = '恭喜！你通关了所有关卡！';
+            }
+            return true;
+        }
+
+        // 更新关卡按钮状态
+        function updateLevelButtons() {
+            levelBtns.forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.level) === currentLevel);
+            });
+        }
+
+        // 事件监听
+        restartBtn.addEventListener('click', () => initGame(currentLevel));
+        hintBtn.addEventListener('click', () => {
+            // 简单的提示：显示当前空白位置
+            message.textContent = `空白位置在第${emptyPos.row + 1}行第${emptyPos.col + 1}列`;
+        });
+
+        levelBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const level = parseInt(btn.dataset.level);
+                if (level <= levels.length) {
+                    initGame(level);
+                }
+            });
+        });
+
+        // 初始化游戏
+        initGame(1);
+    </script>
+</body>
+</html>
