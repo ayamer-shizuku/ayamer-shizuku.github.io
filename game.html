@@ -165,6 +165,16 @@
        .hacker-overlay::-webkit-scrollbar-thumb {
            background: #0f0;
        }
+       .video-container {
+           margin-top: 20px;
+           text-align: center;
+       }
+       #gameVideo {
+           max-width: 100%;
+           max-height: 400px;
+           border-radius: 8px;
+           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+       }
        .bottom-nav {
            position: fixed;
            bottom: 0;
@@ -223,6 +233,7 @@
        <div class="game-selector">
            <button class="game-btn active" data-game="huarong">华容道</button>
            <button class="game-btn" data-game="hacker">黑客模式</button>
+           <button class="game-btn" data-game="video">视频播放</button>
        </div>
 
        <div id="huarong-game" class="game-module active">
@@ -243,6 +254,16 @@
            <p class="hacker-instructions">按下空格键开始生成代码，按 Esc 键退出。</p>
            <div id="hackerOverlay" class="hacker-overlay">
                <div id="hackerCode" class="hacker-code"></div>
+           </div>
+       </div>
+
+       <div id="video-game" class="game-module">
+           <h3>视频播放</h3>
+           <div class="video-container">
+               <video id="gameVideo" autoplay loop muted controls>
+                   <source src="./かさねてとnb666.mp4" type="video/mp4">
+                   您的浏览器不支持 HTML5 视频播放。
+               </video>
            </div>
        </div>
    </div>
@@ -473,7 +494,6 @@
 
        hackerOverlay.addEventListener('click', stopHackerMode);
 
-       // 确保 DOM 加载完成后再初始化游戏
        window.addEventListener('DOMContentLoaded', () => {
            initGame(1);
        });
