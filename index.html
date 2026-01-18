@@ -1,521 +1,617 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>JellyTime 论坛</title>
-    <style>
-        /* 底部导航栏样式 */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background-color: #fff;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 998;
-}
-
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: #666;
-    font-size: 12px;
-}
-
-.nav-icon {
-    font-size: 24px;
-    margin-bottom: 4px;
-}
-
-.nav-item.active {
-    color: #4299e1;
-}
-
-/* 为页面内容添加底部内边距，避免被导航栏遮挡 */
-body {
-    padding-bottom: 80px;
-}
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Microsoft Yahei", sans-serif;
-        }
-        body {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f7f8fa;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        h1 a {
-            color: #4299e1;
-            text-decoration: none;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #4299e1;
-        }
-        .btn {
-            padding: 8px 16px;
-            background-color: #4299e1;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .btn-outline {
-            background-color: transparent;
-            color: #4299e1;
-            border: 1px solid #4299e1;
-        }
-        .post-btn {
-            margin-bottom: 20px;
-            display: inline-block;
-        }
-        .post-item {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: box-shadow 0.3s;
-        }
-        .post-item:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .post-item h3 {
-            margin-bottom: 10px;
-        }
-        .post-item a {
-            color: #333;
-            text-decoration: none;
-        }
-        .post-item a:hover {
-            color: #4299e1;
-        }
-        .post-meta {
-            font-size: 12px;
-            color: #666;
-            margin-top: 10px;
-            display: flex;
-            gap: 15px;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-        }
-        .modal-content {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-        }
-        .modal-content h2 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 18px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-        .modal-footer {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-        .empty-tip {
-            text-align: center;
-            color: #999;
-            padding: 40px 0;
-            background: #fff;
-            border-radius: 8px;
-        }
-        .admin-tag {
-            color: #ff4444;
-            font-size: 12px;
-            margin-left: 5px;
-            font-weight: bold;
-        }
-        /* 悬浮邮件图标样式 */
-        .email-float-btn {
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-            width: 60px;
-            height: 60px;
-            background-color: #4299e1;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
-            z-index: 1000;
-            transition: background-color 0.3s;
-        }
-        .email-float-btn:hover {
-            background-color: #3182ce;
-        }
-        /* 建议表单弹窗样式 */
-        .email-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-        }
-        .email-modal-content {
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-        }
-        .email-modal-content h3 {
-            color: #333;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .email-modal-content .form-group {
-            margin-bottom: 15px;
-        }
-        .email-modal-content input,
-        .email-modal-content textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-        .email-modal-content textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-        .email-modal-footer {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-        .email-modal-footer button {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background-color: #4299e1;
-            color: #fff;
-        }
-        .btn-secondary {
-            background-color: #ddd;
-            color: #333;
-        }
-
-        /* --- 新增：手机适配样式 --- */
-        .is-mobile body {
-            max-width: 100%;
-            padding: 10px;
-        }
-        .is-mobile .post-item {
-            padding: 15px;
-        }
-        .is-mobile .btn {
-            padding: 12px 20px;
-            font-size: 16px;
-        }
-        .is-mobile .form-group input,
-        .is-mobile .form-group textarea {
-            padding: 12px;
-            font-size: 16px;
-        }
-        .is-mobile .email-float-btn {
-            width: 50px;
-            height: 50px;
-            font-size: 20px;
-        }
-        .is-mobile .modal-content,
-        .is-mobile .email-modal-content {
-            width: 95%;
-            padding: 20px;
-        }
-    </style>
+   <meta charset="UTF-8">
+   <title>JellyTime 论坛</title>
+   <style>
+       * {
+           margin: 0;
+           padding: 0;
+           box-sizing: border-box;
+           font-family: "Microsoft Yahei", sans-serif;
+       }
+       body {
+           max-width: 800px;
+           margin: 0 auto;
+           padding: 20px;
+           background-color: #f7f8fa;
+           padding-bottom: 80px; /* 为底部导航栏预留空间 */
+       }
+       header {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           margin-bottom: 30px;
+           padding-bottom: 15px;
+           border-bottom: 1px solid #eee;
+       }
+       h1 a {
+           color: #4299e1;
+           text-decoration: none;
+       }
+       .user-info {
+           display: flex;
+           align-items: center;
+           gap: 10px;
+       }
+       .user-avatar {
+           width: 40px;
+           height: 40px;
+           border-radius: 50%;
+           object-fit: cover;
+           border: 2px solid #4299e1;
+       }
+       .btn {
+           padding: 8px 16px;
+           background-color: #4299e1;
+           color: #fff;
+           border: none;
+           border-radius: 6px;
+           cursor: pointer;
+           text-decoration: none;
+           font-size: 14px;
+       }
+       .btn-outline {
+           background-color: transparent;
+           color: #4299e1;
+           border: 1px solid #4299e1;
+       }
+       .post-btn {
+           margin-bottom: 20px;
+           display: inline-block;
+       }
+       .post-item {
+           background: #fff;
+           padding: 20px;
+           border-radius: 8px;
+           margin-bottom: 15px;
+           box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+           transition: box-shadow 0.3s;
+       }
+       .post-item:hover {
+           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+       }
+       .post-item h3 {
+           margin-bottom: 10px;
+       }
+       .post-item a {
+           color: #333;
+           text-decoration: none;
+       }
+       .post-item a:hover {
+           color: #4299e1;
+       }
+       .post-meta {
+           font-size: 12px;
+           color: #666;
+           margin-top: 10px;
+           display: flex;
+           gap: 15px;
+       }
+       .modal {
+           display: none;
+           position: fixed;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background: rgba(0,0,0,0.5);
+           align-items: center;
+           justify-content: center;
+           z-index: 999;
+       }
+       .modal-content {
+           background: #fff;
+           padding: 30px;
+           border-radius: 10px;
+           width: 90%;
+           max-width: 500px;
+       }
+       .modal-content h2 {
+           margin-bottom: 20px;
+           color: #333;
+           font-size: 18px;
+       }
+       .form-group {
+           margin-bottom: 15px;
+       }
+       .form-group label {
+           display: block;
+           margin-bottom: 6px;
+           color: #333;
+           font-size: 14px;
+       }
+       .form-group input, .form-group textarea {
+           width: 100%;
+           padding: 10px;
+           border: 1px solid #ddd;
+           border-radius: 6px;
+           font-size: 14px;
+       }
+       .form-group textarea {
+           min-height: 120px;
+           resize: vertical;
+       }
+       .modal-footer {
+           display: flex;
+           gap: 10px;
+           justify-content: flex-end;
+           margin-top: 20px;
+       }
+       .empty-tip {
+           text-align: center;
+           color: #999;
+           padding: 40px 0;
+           background: #fff;
+           border-radius: 8px;
+       }
+       .admin-tag {
+           color: #ff4444;
+           font-size: 12px;
+           margin-left: 5px;
+           font-weight: bold;
+       }
+       /* 悬浮邮件图标样式 */
+       .email-float-btn {
+           position: fixed;
+           right: 20px;
+           bottom: 80px; /* 避开底部导航栏 */
+           width: 60px;
+           height: 60px;
+           background-color: #4299e1;
+           border-radius: 50%;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           color: #fff;
+           font-size: 24px;
+           cursor: pointer;
+           box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+           z-index: 1000;
+           transition: background-color 0.3s;
+       }
+       .email-float-btn:hover {
+           background-color: #3182ce;
+       }
+       /* 建议表单弹窗样式 */
+       .email-modal {
+           display: none;
+           position: fixed;
+           top: 0;
+           left: 0;
+           width: 100%;
+           height: 100%;
+           background: rgba(0,0,0,0.5);
+           align-items: center;
+           justify-content: center;
+           z-index: 1001;
+       }
+       .email-modal-content {
+           background: #fff;
+           padding: 30px;
+           border-radius: 10px;
+           width: 90%;
+           max-width: 400px;
+       }
+       .email-modal-content h3 {
+           color: #333;
+           margin-bottom: 20px;
+           text-align: center;
+       }
+       .email-modal-content .form-group {
+           margin-bottom: 15px;
+       }
+       .email-modal-content input,
+       .email-modal-content textarea {
+           width: 100%;
+           padding: 10px;
+           border: 1px solid #ddd;
+           border-radius: 6px;
+           font-size: 14px;
+       }
+       .email-modal-content textarea {
+           min-height: 120px;
+           resize: vertical;
+       }
+       .email-modal-footer {
+           display: flex;
+           gap: 10px;
+           justify-content: flex-end;
+           margin-top: 20px;
+       }
+       .email-modal-footer button {
+           padding: 8px 16px;
+           border: none;
+           border-radius: 6px;
+           cursor: pointer;
+       }
+       .btn-primary {
+           background-color: #4299e1;
+           color: #fff;
+       }
+       .btn-secondary {
+           background-color: #ddd;
+           color: #333;
+       }
+       /* 底部导航栏样式 */
+       .bottom-nav {
+           position: fixed;
+           bottom: 0;
+           left: 0;
+           width: 100%;
+           height: 60px;
+           background-color: #fff;
+           border-top: 1px solid #eee;
+           display: flex;
+           justify-content: space-around;
+           align-items: center;
+           z-index: 998;
+       }
+       .nav-item {
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           text-decoration: none;
+           color: #666;
+           font-size: 12px;
+       }
+       .nav-icon {
+           font-size: 24px;
+           margin-bottom: 4px;
+       }
+       .nav-item.active {
+           color: #4299e1;
+       }
+       /* 图片/视频预览样式 */
+       #imagePreview img {
+           width: 80px;
+           height: 80px;
+           object-fit: cover;
+           border-radius: 4px;
+       }
+       #videoPreview video {
+           max-width: 100%;
+           max-height: 200px;
+           border-radius: 4px;
+       }
+       .post-images {
+           margin-top: 10px;
+           display: flex;
+           flex-wrap: wrap;
+           gap: 8px;
+       }
+       .post-images img {
+           width: 80px;
+           height: 80px;
+           object-fit: cover;
+           border-radius: 4px;
+       }
+       .post-video {
+           margin-top: 10px;
+       }
+       .post-video video {
+           max-width: 100%;
+           max-height: 200px;
+           border-radius: 4px;
+       }
+       /* --- 手机适配样式 --- */
+       .is-mobile body {
+           max-width: 100%;
+           padding: 10px;
+       }
+       .is-mobile .post-item {
+           padding: 15px;
+       }
+       .is-mobile .btn {
+           padding: 12px 20px;
+           font-size: 16px;
+       }
+       .is-mobile .form-group input,
+       .is-mobile .form-group textarea {
+           padding: 12px;
+           font-size: 16px;
+       }
+       .is-mobile .email-float-btn {
+           width: 50px;
+           height: 50px;
+           font-size: 20px;
+           bottom: 70px;
+       }
+       .is-mobile .modal-content,
+       .is-mobile .email-modal-content {
+           width: 95%;
+           padding: 20px;
+       }
+   </style>
 </head>
 <body>
-    <header>
-        <h1><a href=" ">JellyTime 论坛</a ></h1>
-        <div class="user-info" id="user-info">
-            <span>未登录</span>
-            <a href="login.html" class="btn">登录</a >
-            <a href="register.html" class="btn btn-outline">注册</a >
-        </div>
-    </header>
+   <header>
+       <h1><a href="index.html">JellyTime 论坛</a></h1>
+       <div class="user-info" id="user-info">
+           <span>未登录</span>
+           <a href="login.html" class="btn">登录</a>
+           <a href="register.html" class="btn btn-outline">注册</a>
+       </div>
+   </header>
 
-    <a href="javascript:void(0)" class="btn post-btn" id="create-post-btn">发布新帖</a >
+   <a href="javascript:void(0)" class="btn post-btn" id="create-post-btn">发布新帖</a>
 
-    <!-- 帖子列表 -->
-    <div id="post-list"></div>
+   <!-- 帖子列表 -->
+   <div id="post-list"></div>
 
-    <!-- 发帖弹窗 -->
-    <div class="modal" id="post-modal">
-        <div class="modal-content">
-            <h2>发布新帖</h2>
-            <div class="form-group">
-                <input type="text" id="post-title" placeholder="请输入帖子标题（必填）">
-            </div>
-            <div class="form-group">
-                <textarea id="post-content" placeholder="请输入帖子内容（必填）"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" id="cancel-post">取消</button>
-                <button class="btn" id="submit-post">发布</button>
-            </div>
-        </div>
-    </div>
+   <!-- 发帖弹窗 -->
+   <div class="modal" id="post-modal">
+       <div class="modal-content">
+           <h2>发布新帖</h2>
+           <div class="form-group">
+               <input type="text" id="post-title" placeholder="请输入帖子标题（必填）">
+           </div>
+           <div class="form-group">
+               <textarea id="post-content" placeholder="请输入帖子内容（必填）"></textarea>
+           </div>
+           <!-- 新增：上传图片 -->
+           <div class="form-group">
+               <label>上传图片（最多15张）</label>
+               <input type="file" id="imageUpload" accept="image/*" multiple>
+               <div id="imagePreview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;"></div>
+           </div>
+           <!-- 新增：上传视频 -->
+           <div class="form-group">
+               <label>上传视频（可选1个）</label>
+               <input type="file" id="videoUpload" accept="video/*">
+               <div id="videoPreview" style="margin-top: 10px;"></div>
+           </div>
+           <div class="modal-footer">
+               <button class="btn btn-outline" id="cancel-post">取消</button>
+               <button class="btn" id="submit-post">发布</button>
+           </div>
+       </div>
+   </div>
 
-    <!-- 悬浮邮件图标 -->
-    <div class="email-float-btn" id="emailBtn">✉️</div>
+   <!-- 悬浮邮件图标 -->
+   <div class="email-float-btn" id="emailBtn">✉️</div>
 
-    <!-- 建议提交弹窗 -->
-    <div class="email-modal" id="emailModal">
-        <div class="email-modal-content">
-            <h3>给站长提建议</h3>
-            <div class="form-group">
-                <input type="text" id="suggestTitle" placeholder="建议标题（选填）">
-            </div>
-            <div class="form-group">
-                <textarea id="suggestContent" placeholder="请输入你的建议内容（必填）"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" id="closeModalBtn">取消</button>
-                <button class="btn-primary" id="sendSuggestBtn">发送建议</button>
-            </div>
-        </div>
-    </div>
+   <!-- 建议提交弹窗 -->
+   <div class="email-modal" id="emailModal">
+       <div class="email-modal-content">
+           <h3>给站长提建议</h3>
+           <div class="form-group">
+               <input type="text" id="suggestTitle" placeholder="建议标题（选填）">
+           </div>
+           <div class="form-group">
+               <textarea id="suggestContent" placeholder="请输入你的建议内容（必填）"></textarea>
+           </div>
+           <div class="email-modal-footer">
+               <button class="btn-secondary" id="closeModalBtn">取消</button>
+               <button class="btn-primary" id="sendSuggestBtn">发送建议</button>
+           </div>
+       </div>
+   </div>
 
-    <script>
-        // --- 新增：设备检测插件 ---
-        (function() {
-            function detectDevice() {
-                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-                const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
-                const body = document.body;
-                if (isMobile) {
-                    body.classList.add('is-mobile');
-                    body.classList.remove('is-desktop');
-                } else {
-                    body.classList.add('is-desktop');
-                    body.classList.remove('is-mobile');
-                }
-            }
-            window.addEventListener('DOMContentLoaded', detectDevice);
-            window.addEventListener('resize', detectDevice);
-        })();
+   <!-- 底部导航栏 -->
+   <nav class="bottom-nav">
+       <a href="index.html" class="nav-item active">
+           <span class="nav-icon">🏠</span>
+           <span class="nav-text">首页</span>
+       </a>
+       <a href="login.html" class="nav-item">
+           <span class="nav-icon">👤</span>
+           <span class="nav-text">登录</span>
+       </a>
+       <a href="game.html" class="nav-item">
+           <span class="nav-icon">🎮</span>
+           <span class="nav-text">游戏</span>
+       </a>
+   </nav>
 
-        // 原有功能代码
-        const userInfo = document.getElementById('user-info');
-        const createPostBtn = document.getElementById('create-post-btn');
-        const postModal = document.getElementById('post-modal');
-        const cancelPostBtn = document.getElementById('cancel-post');
-        const submitPostBtn = document.getElementById('submit-post');
-        const postList = document.getElementById('post-list');
-        const postTitleInput = document.getElementById('post-title');
-        const postContentInput = document.getElementById('post-content');
+   <script>
+       // --- 设备检测插件 ---
+       (function() {
+           function detectDevice() {
+               const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+               const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+               const body = document.body;
+               if (isMobile) {
+                   body.classList.add('is-mobile');
+                   body.classList.remove('is-desktop');
+               } else {
+                   body.classList.add('is-desktop');
+                   body.classList.remove('is-mobile');
+               }
+           }
+           window.addEventListener('DOMContentLoaded', detectDevice);
+           window.addEventListener('resize', detectDevice);
+       })();
 
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        let posts = JSON.parse(localStorage.getItem('forumPosts')) || [
-            { id: '1', title: '欢迎来到 JellyTime 论坛', content: '这是论坛的第一条测试帖子，大家可以在这里畅所欲言！🎉', author: '管理员', time: '2026-01-01 10:00' },
-            { id: '2', title: '论坛使用指南', content: '1. 注册账户后可发布新帖；2. 支持上传个人头像；3. 评论和点赞数据保存在本地', author: '管理员', time: '2026-01-02 15:30' }
-        ];
+       // 元素获取
+       const userInfo = document.getElementById('user-info');
+       const createPostBtn = document.getElementById('create-post-btn');
+       const postModal = document.getElementById('post-modal');
+       const cancelPostBtn = document.getElementById('cancel-post');
+       const submitPostBtn = document.getElementById('submit-post');
+       const postList = document.getElementById('post-list');
+       const postTitleInput = document.getElementById('post-title');
+       const postContentInput = document.getElementById('post-content');
+       const imageUpload = document.getElementById('imageUpload');
+       const imagePreview = document.getElementById('imagePreview');
+       const videoUpload = document.getElementById('videoUpload');
+       const videoPreview = document.getElementById('videoPreview');
 
-        function updateUserStatus() {
-            if (currentUser) {
-                const isAdmin = currentUser.email === 'jellytime_official@163.com';
-                const usernameDisplay = isAdmin 
-                    ? `${currentUser.username} <span class="admin-tag">本站站长</span>` 
-                    : currentUser.username;
+       // 本地存储数据
+       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+       let posts = JSON.parse(localStorage.getItem('forumPosts')) || [
+           { id: '1', title: '欢迎来到 JellyTime 论坛', content: '这是论坛的第一条测试帖子，大家可以在这里畅所欲言！🎉', author: '管理员', time: '2026-01-01 10:00', images: [], video: '' },
+           { id: '2', title: '论坛使用指南', content: '1. 注册账户后可发布新帖；2. 支持上传个人头像；3. 评论和点赞数据保存在本地', author: '管理员', time: '2026-01-02 15:30', images: [], video: '' }
+       ];
 
-                userInfo.innerHTML = `
-                    < img src="${currentUser.avatar || 'https://via.placeholder.com/40'}" class="user-avatar" alt="用户头像">
-                    <span>${usernameDisplay}</span>
-                    <button class="btn btn-outline" id="logout-btn">退出</button>
-                `;
-                document.getElementById('logout-btn').addEventListener('click', () => {
-                    localStorage.removeItem('currentUser');
-                    alert('退出登录成功！');
-                    window.location.reload();
-                });
-            }
-        }
+       // 更新用户登录状态（带站长标识）
+       function updateUserStatus() {
+           if (currentUser) {
+               const isAdmin = currentUser.email === 'jellytime_official@163.com';
+               const usernameDisplay = isAdmin
+                   ? `${currentUser.username} <span class="admin-tag">本站站长</span>`
+                   : currentUser.username;
 
-        function renderPosts() {
-            if (posts.length === 0) {
-                postList.innerHTML = '<div class="empty-tip">暂无帖子，快来发布第一条吧！</div>';
-                return;
-            }
-            postList.innerHTML = '';
-            posts.forEach(post => {
-                const postItem = document.createElement('div');
-                postItem.className = 'post-item';
-                postItem.innerHTML = `
-                    <h3><a href="post.html?id=${post.id}">${post.title}</a ></h3>
-                    <p>${post.content.length > 60 ? post.content.slice(0, 60) + '...' : post.content}</p >
-                    <div class="post-meta">
-                        <span>作者：${post.author}</span>
-                        <span>时间：${post.time}</span>
-                    </div>
-                `;
-                postList.appendChild(postItem);
-            });
-        }
+               userInfo.innerHTML = `
+                   <img src="${currentUser.avatar || 'https://via.placeholder.com/40'}" class="user-avatar" alt="用户头像">
+                   <span>${usernameDisplay}</span>
+                   <button class="btn btn-outline" id="logout-btn">退出</button>
+               `;
+               document.getElementById('logout-btn').addEventListener('click', () => {
+                   localStorage.removeItem('currentUser');
+                   alert('退出登录成功！');
+                   window.location.reload();
+               });
+           }
+       }
 
-        createPostBtn.addEventListener('click', () => {
-            if (!currentUser) {
-                alert('请先登录再发布帖子！');
-                window.location.href = 'login.html';
-                return;
-            }
-            postModal.style.display = 'flex';
-        });
-        cancelPostBtn.addEventListener('click', () => {
-            postModal.style.display = 'none';
-            postTitleInput.value = '';
-            postContentInput.value = '';
-        });
+       // 渲染帖子列表
+       function renderPosts() {
+           if (posts.length === 0) {
+               postList.innerHTML = '<div class="empty-tip">暂无帖子，快来发布第一条吧！</div>';
+               return;
+           }
+           postList.innerHTML = '';
+           posts.forEach(post => {
+               const postItem = document.createElement('div');
+               postItem.className = 'post-item';
+               postItem.innerHTML = `
+                   <h3><a href="post.html?id=${post.id}">${post.title}</a></h3>
+                   <p>${post.content.length > 60 ? post.content.slice(0, 60) + '...' : post.content}</p>
+                   ${post.images && post.images.length > 0 ? `
+                       <div class="post-images">
+                           ${post.images.map(img => `<img src="${img}">`).join('')}
+                       </div>
+                   ` : ''}
+                   ${post.video ? `
+                       <div class="post-video">
+                           <video src="${post.video}" controls></video>
+                       </div>
+                   ` : ''}
+                   <div class="post-meta">
+                       <span>作者：${post.author}</span>
+                       <span>时间：${post.time}</span>
+                   </div>
+               `;
+               postList.appendChild(postItem);
+           });
+       }
 
-        submitPostBtn.addEventListener('click', () => {
-            const title = postTitleInput.value.trim();
-            const content = postContentInput.value.trim();
-            if (!title || !content) {
-                alert('标题和内容不能为空！');
-                return;
-            }
-            const newPost = {
-                id: Date.now().toString(),
-                title,
-                content,
-                author: currentUser.username,
-                time: new Date().toLocaleString()
-            };
-            posts.unshift(newPost);
-            localStorage.setItem('forumPosts', JSON.stringify(posts));
-            renderPosts();
-            cancelPostBtn.click();
-            alert('帖子发布成功！');
-        });
+       // 发帖弹窗控制
+       createPostBtn.addEventListener('click', () => {
+           if (!currentUser) {
+               alert('请先登录再发布帖子！');
+               window.location.href = 'login.html';
+               return;
+           }
+           postModal.style.display = 'flex';
+       });
+       cancelPostBtn.addEventListener('click', () => {
+           postModal.style.display = 'none';
+           postTitleInput.value = '';
+           postContentInput.value = '';
+           imageUpload.value = '';
+           imagePreview.innerHTML = '';
+           videoUpload.value = '';
+           videoPreview.innerHTML = '';
+       });
 
-        // 邮件建议功能
-        const emailBtn = document.getElementById('emailBtn');
-        const emailModal = document.getElementById('emailModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const sendSuggestBtn = document.getElementById('sendSuggestBtn');
-        const suggestTitle = document.getElementById('suggestTitle');
-        const suggestContent = document.getElementById('suggestContent');
+       // 图片上传预览 + 限制最多15张
+       imageUpload.addEventListener('change', () => {
+           const files = imageUpload.files;
+           if (files.length > 15) {
+               alert('最多只能上传15张图片');
+               imageUpload.value = '';
+               imagePreview.innerHTML = '';
+               return;
+           }
 
-        emailBtn.addEventListener('click', () => {
-            emailModal.style.display = 'flex';
-        });
+           imagePreview.innerHTML = '';
+           for (let i = 0; i < files.length; i++) {
+               const file = files[i];
+               const reader = new FileReader();
+               reader.onload = (e) => {
+                   const img = document.createElement('img');
+                   img.src = e.target.result;
+                   imagePreview.appendChild(img);
+               };
+               reader.readAsDataURL(file);
+           }
+       });
 
-        closeModalBtn.addEventListener('click', () => {
-            emailModal.style.display = 'none';
-            suggestTitle.value = '';
-            suggestContent.value = '';
-        });
+       // 视频上传预览 + 限制1个
+       videoUpload.addEventListener('change', () => {
+           const file = videoUpload.files[0];
+           if (!file) return;
 
-        emailModal.addEventListener('click', (e) => {
-            if (e.target === emailModal) {
-                emailModal.style.display = 'none';
-                suggestTitle.value = '';
-                suggestContent.value = '';
-            }
-        });
+           videoPreview.innerHTML = '';
+           const reader = new FileReader();
+           reader.onload = (e) => {
+               const video = document.createElement('video');
+               video.src = e.target.result;
+               video.controls = true;
+               videoPreview.appendChild(video);
+           };
+           reader.readAsDataURL(file);
+       });
 
-        sendSuggestBtn.addEventListener('click', () => {
-            const title = suggestTitle.value.trim() || 'JellyTime 论坛建议';
-            const content = suggestContent.value.trim();
-            if (!content) {
-                alert('建议内容不能为空！');
-                return;
-            }
-            const yourEmail = 'jellytime_official@163.com';
-            const mailtoLink = `mailto:${yourEmail}?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(content)}`;
-            window.open(mailtoLink);
-            alert('已为你打开邮箱客户端，请确认发送！');
-            emailModal.style.display = 'none';
-            suggestTitle.value = '';
-            suggestContent.value = '';
-        });
+       // 提交新帖
+       submitPostBtn.addEventListener('click', () => {
+           const title = postTitleInput.value.trim();
+           const content = postContentInput.value.trim();
+           if (!title || !content) {
+               alert('标题和内容不能为空！');
+               return;
+           }
 
-        // 初始化
-        updateUserStatus();
-        renderPosts();
-    </script>
-</body>
-    <!-- 底部导航栏 -->
-<nav class="bottom-nav">
-    <a href=" " class="nav-item">
-        <span class="nav-icon">🏠</span>
-        <span class="nav-text">首页</span>
-    </a >
-    <a href="login.html" class="nav-item">
-        <span class="nav-icon">👤</span>
-        <span class="nav-text">登录</span>
-    </a >
-    <a href="game.html" class="nav-item">
-        <span class="nav-icon">🎮</span>
-        <span class="nav-text">游戏</span>
-    </a >
-</nav>
-</html>
+           // 收集图片
+           const imageFiles = imageUpload.files;
+           const imageUrls = [];
+           for (let i = 0; i < imageFiles.length; i++) {
+               const file = imageFiles[i];
+               const reader = new FileReader();
+               reader.onload = (e) => {
+                   imageUrls.push(e.target.result);
+               };
+               reader.readAsDataURL(file);
+           }
+
+           // 收集视频
+           const videoFile = videoUpload.files[0];
+           let videoUrl = '';
+           if (videoFile) {
+               const reader = new FileReader();
+               reader.onload = (e) => {
+                   videoUrl = e.target.result;
+               };
+               reader.readAsDataURL(videoFile);
+           }
+
+           // 创建新帖子
+           const newPost = {
+               id: Date.now().toString(),
+               title,
+               content,
+               author: currentUser.username,
+               time: new Date().toLocaleString(),
+               images: imageUrls,
+               video: videoUrl
+           };
+           posts.unshift(newPost);
+           localStorage.setItem('forumPosts', JSON.stringify(posts));
+           renderPosts();
+           cancelPostBtn.click();
+           alert('帖子发布成功！');
+       });
+
+       // 邮件建议功能
+       const emailBtn = document.getElementById('emailBtn');
+       const emailModal = document.getElementById('emailModal');
+       const closeModalBtn = document.getElementById('closeModalBtn');
+       const sendSuggestBtn = document.getElementById('sendSuggestBtn');
+       const suggestTitle = document.getElementById('suggestTitle');
+       const suggestContent = document.getElementById('suggestContent');
+
+       emailBtn.addEventListener('click', () => {
+           e
+
