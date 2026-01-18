@@ -15,7 +15,7 @@
            margin: 0 auto;
            padding: 20px;
            background-color: #f7f8fa;
-           padding-bottom: 80px; /* 为底部导航栏预留空间 */
+           padding-bottom: 80px;
        }
        header {
            display: flex;
@@ -40,7 +40,6 @@
            color: #333;
            margin-bottom: 20px;
        }
-       /* --- 游戏模块切换按钮 --- */
        .game-selector {
            margin-bottom: 20px;
            display: flex;
@@ -59,7 +58,12 @@
        .game-btn.active {
            background-color: #3182ce;
        }
-       /* --- 华容道游戏样式 --- */
+       .game-module {
+           display: none;
+       }
+       .game-module.active {
+           display: block;
+       }
        .level-selector {
            margin-bottom: 20px;
        }
@@ -129,7 +133,6 @@
            color: #4299e1;
            font-weight: bold;
        }
-       /* --- 黑客模式样式 --- */
        .hacker-instructions {
            margin-bottom: 20px;
            color: #666;
@@ -153,7 +156,6 @@
        .hacker-code {
            white-space: pre-wrap;
        }
-       /* 滚动条样式（可选） */
        .hacker-overlay::-webkit-scrollbar {
            width: 10px;
        }
@@ -163,7 +165,6 @@
        .hacker-overlay::-webkit-scrollbar-thumb {
            background: #0f0;
        }
-       /* 底部导航栏样式 */
        .bottom-nav {
            position: fixed;
            bottom: 0;
@@ -192,217 +193,6 @@
        .nav-item.active {
            color: #4299e1;
        }
-       /* --- 手机适配样式 --- */
-       .is-mobile body {
-           max-width: 100%;
-           padding: 10px;
-       }
-       .is-mobile .game-container {
-           padding: 20px;
-       }
-       .is-mobile .board {
-           grid-template-columns: repeat(4, 70控制区就是你华容道游戏里“重新开始”和“提示”按钮所在的那一块区域。
-
-不过，把“黑客模式”按钮放在那里会显得有点拥挤。我建议把它放在**游戏标题下方**，这样布局更清晰，也更符合“模块切换”的逻辑。
-
-下面是修改后的完整 `game.html` 代码，你直接复制覆盖原文件即可。
-
-```html
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-   <meta charset="UTF-8">
-   <title>游戏中心 - JellyTime 论坛</title>
-   <style>
-       * {
-           margin: 0;
-           padding: 0;
-           box-sizing: border-box;
-           font-family: "Microsoft Yahei", sans-serif;
-       }
-       body {
-           max-width: 800px;
-           margin: 0 auto;
-           padding: 20px;
-           background-color: #f7f8fa;
-           padding-bottom: 80px; /* 为底部导航栏预留空间 */
-       }
-       header {
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-           margin-bottom: 30px;
-           padding-bottom: 15px;
-           border-bottom: 1px solid #eee;
-       }
-       h1 a {
-           color: #4299e1;
-           text-decoration: none;
-       }
-       .game-container {
-           background: #fff;
-           padding: 30px;
-           border-radius: 10px;
-           box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-           text-align: center;
-       }
-       .game-container h2 {
-           color: #333;
-           margin-bottom: 20px;
-       }
-       /* --- 游戏模块切换按钮 --- */
-       .game-selector {
-           margin-bottom: 20px;
-           display: flex;
-           gap: 10px;
-           justify-content: center;
-       }
-       .game-btn {
-           padding: 10px 20px;
-           background-color: #4299e1;
-           color: #fff;
-           border: none;
-           border-radius: 6px;
-           cursor: pointer;
-           font-size: 16px;
-       }
-       .game-btn.active {
-           background-color: #3182ce;
-       }
-       /* --- 华容道游戏样式 --- */
-       .level-selector {
-           margin-bottom: 20px;
-       }
-       .level-btn {
-           padding: 8px 16px;
-           margin: 0 5px;
-           background-color: #4299e1;
-           color: #fff;
-           border: none;
-           border-radius: 6px;
-           cursor: pointer;
-       }
-       .level-btn.active {
-           background-color: #3182ce;
-       }
-       .board {
-           display: inline-grid;
-           grid-template-columns: repeat(4, 80px);
-           grid-template-rows: repeat(5, 80px);
-           gap: 2px;
-           background-color: #333;
-           padding: 2px;
-           border-radius: 6px;
-           margin-bottom: 20px;
-       }
-       .tile {
-           background-color: #4299e1;
-           color: #fff;
-           display: flex;
-           align-items: center;
-           justify-content: center;
-           font-size: 24px;
-           font-weight: bold;
-           border-radius: 4px;
-           cursor: pointer;
-           transition: background-color 0.3s;
-       }
-       .tile:hover {
-           background-color: #3182ce;
-       }
-       .tile.empty {
-           background-color: #f7f8fa;
-           cursor: default;
-       }
-       .tile.empty:hover {
-           background-color: #f7f8fa;
-       }
-       .controls {
-           margin-top: 20px;
-       }
-       .btn {
-           padding: 10px 20px;
-           margin: 0 10px;
-           background-color: #4299e1;
-           color: #fff;
-           border: none;
-           border-radius: 6px;
-           cursor: pointer;
-           font-size: 16px;
-       }
-       .btn:hover {
-           background-color: #3182ce;
-       }
-       .message {
-           margin-top: 20px;
-           font-size: 18px;
-           color: #4299e1;
-           font-weight: bold;
-       }
-       /* --- 黑客模式样式 --- */
-       .hacker-instructions {
-           margin-bottom: 20px;
-           color: #666;
-       }
-       .hacker-overlay {
-           position: fixed;
-           top: 0;
-           left: 0;
-           width: 100%;
-           height: 100%;
-           background: #000;
-           color: #0f0;
-           font-family: "Courier New", monospace;
-           font-size: 14px;
-           padding: 20px;
-           box-sizing: border-box;
-           overflow-y: auto;
-           z-index: 9999;
-           display: none;
-       }
-       .hacker-code {
-           white-space: pre-wrap;
-       }
-       /* 滚动条样式（可选） */
-       .hacker-overlay::-webkit-scrollbar {
-           width: 10px;
-       }
-       .hacker-overlay::-webkit-scrollbar-track {
-           background: #111;
-       }
-       .hacker-overlay::-webkit-scrollbar-thumb {
-           background: #0f0;
-       }
-       /* 底部导航栏样式 */
-       .bottom-nav {
-           position: fixed;
-           bottom: 0;
-           left: 0;
-           width: 100%;
-           height: 60px;
-           background-color: #fff;
-           border-top: 1px solid #eee;
-           display: flex;
-           justify-content: space-around;
-           align-items: center;
-           z-index: 998;
-       }
-       .nav-item {
-           display: flex;
-           flex-direction: column;
-           align-items: center;
-           text-decoration: none;
-           color: #666;
-           font-size: 12px;
-       }
-       .nav-icon {
-           font-size: 24px;
-           margin-bottom: 4px;
-       }
-       .nav-item.active {
-           color: #4299e1;
-       }
-       /* --- 手机适配样式 --- */
        .is-mobile body {
            max-width: 100%;
            padding: 10px;
@@ -430,20 +220,16 @@
 
    <div class="game-container">
        <h2>游戏中心</h2>
-       
-       <!-- 游戏模块切换按钮 -->
        <div class="game-selector">
            <button class="game-btn active" data-game="huarong">华容道</button>
            <button class="game-btn" data-game="hacker">黑客模式</button>
        </div>
 
-       <!-- 华容道游戏模块 -->
        <div id="huarong-game" class="game-module active">
            <div class="level-selector">
                <button class="level-btn active" data-level="1">1</button>
                <button class="level-btn" data-level="2">2</button>
                <button class="level-btn" data-level="3">3</button>
-               <!-- 更多关卡按钮... -->
            </div>
            <div class="board" id="board"></div>
            <div class="controls">
@@ -453,7 +239,6 @@
            <div class="message" id="message"></div>
        </div>
 
-       <!-- 黑客模式模块 -->
        <div id="hacker-game" class="game-module">
            <p class="hacker-instructions">按下空格键开始生成代码，按 Esc 键退出。</p>
            <div id="hackerOverlay" class="hacker-overlay">
@@ -462,7 +247,6 @@
        </div>
    </div>
 
-   <!-- 底部导航栏 -->
    <nav class="bottom-nav">
        <a href="index.html" class="nav-item">
            <span class="nav-icon">🏠</span>
@@ -479,7 +263,6 @@
    </nav>
 
    <script>
-       // --- 设备检测插件 ---
        (function() {
            function detectDevice() {
                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -497,57 +280,54 @@
            window.addEventListener('resize', detectDevice);
        })();
 
-       // --- 游戏模块切换功能 ---
        const gameBtns = document.querySelectorAll('.game-btn');
        const gameModules = document.querySelectorAll('.game-module');
 
        gameBtns.forEach(btn => {
            btn.addEventListener('click', () => {
-               // 移除所有按钮的 active 类
                gameBtns.forEach(b => b.classList.remove('active'));
-               // 给当前点击的按钮添加 active 类
                btn.classList.add('active');
                
-               // 隐藏所有游戏模块
                gameModules.forEach(module => module.classList.remove('active'));
-               // 显示当前选中的游戏模块
                const gameId = btn.dataset.game + '-game';
-               document.getElementById(gameId).classList.add('active');
+               const targetModule = document.getElementById(gameId);
+               if (targetModule) {
+                   targetModule.classList.add('active');
+               }
            });
        });
 
-       // --- 华容道游戏逻辑 ---
        const board = document.getElementById('board');
        const message = document.getElementById('message');
        const restartBtn = document.getElementById('restartBtn');
        const hintBtn = document.getElementById('hintBtn');
        const levelBtns = document.querySelectorAll('.level-btn');
 
-       // 游戏数据
        let currentLevel = 1;
        let tiles = [];
-       let emptyPos = { row: 4, col: 3 }; // 初始空白位置
+       let emptyPos = { row: 4, col: 3 };
 
-       // 关卡数据（示例，你可以扩展到20关）
        const levels = [
-           // 第1关
            [
                [1, 2, 3, 4],
                [5, 6, 7, 8],
                [9, 10, 11, 12],
                [13, 14, 15, 0]
            ],
-           // 第2关
            [
                [2, 1, 3, 4],
                [5, 6, 7, 8],
                [9, 10, 11, 12],
                [13, 14, 15, 0]
            ],
-           // 更多关卡...
+           [
+               [1, 3, 2, 4],
+               [5, 7, 6, 8],
+               [9, 11, 10, 12],
+               [13, 14, 15, 0]
+           ]
        ];
 
-       // 初始化游戏
        function initGame(level) {
            currentLevel = level;
            tiles = levels[level - 1].map(row => [...row]);
@@ -557,7 +337,6 @@
            updateLevelButtons();
        }
 
-       // 找到空白位置
        function findEmptyPos() {
            for (let row = 0; row < 4; row++) {
                for (let col = 0; col < 4; col++) {
@@ -569,7 +348,6 @@
            return { row: 0, col: 0 };
        }
 
-       // 渲染游戏板
        function renderBoard() {
            board.innerHTML = '';
            for (let row = 0; row < 4; row++) {
@@ -587,14 +365,11 @@
            }
        }
 
-       // 移动方块
        function moveTile(row, col) {
-           // 检查是否可以移动
            if (
                (row === emptyPos.row && Math.abs(col - emptyPos.col) === 1) ||
                (col === emptyPos.col && Math.abs(row - emptyPos.row) === 1)
            ) {
-               // 交换位置
                [tiles[row][col], tiles[emptyPos.row][emptyPos.col]] =
                [tiles[emptyPos.row][emptyPos.col], tiles[row][col]];
                emptyPos = { row, col };
@@ -603,7 +378,6 @@
            }
        }
 
-       // 检查是否获胜
        function checkWin() {
            const winPattern = [
                [1, 2, 3, 4],
@@ -631,17 +405,14 @@
            return true;
        }
 
-       // 更新关卡按钮状态
        function updateLevelButtons() {
            levelBtns.forEach(btn => {
                btn.classList.toggle('active', parseInt(btn.dataset.level) === currentLevel);
            });
        }
 
-       // 事件监听
        restartBtn.addEventListener('click', () => initGame(currentLevel));
        hintBtn.addEventListener('click', () => {
-           // 简单的提示：显示当前空白位置
            message.textContent = `空白位置在第${emptyPos.row + 1}行第${emptyPos.col + 1}列`;
        });
 
@@ -654,28 +425,60 @@
            });
        });
 
-       // --- 黑客模式功能 ---
        const hackerOverlay = document.getElementById('hackerOverlay');
        const hackerCode = document.getElementById('hackerCode');
        let hackerInterval;
 
-       // 随机生成代码片段
        function generateRandomCode() {
-           const codeTypes = [
-               'python', 'javascript', 'c++', 'java', 'bash', 'html'
-           ];
-
+           const codeTypes = ['python', 'javascript', 'c++', 'java', 'bash', 'html'];
            const codeSnippets = {
-               python: [
-                   'import os',
-                   'import sys',
-                   'import requests',
-                   'from bs4 import BeautifulSoup',
-                   'def hack(target):',
-                   '    response = requests.get(target)',
-                   '    soup = BeautifulSoup(response.text, \'html.parser\')',
-                   '    for link in soup.find_all(\'a\'):',
-                   '        print(link.get(\'href\'))',
-   
+               python: ['import os', 'import sys', 'import requests', 'from bs4 import BeautifulSoup', 'def hack(target):', '    response = requests.get(target)', '    soup = BeautifulSoup(response.text, \'html.parser\')', '    for link in soup.find_all(\'a\'):', '        print(link.get(\'href\'))', 'if __name__ == "__main__":', '    target = sys.argv[1]', '    hack(target)'],
+               javascript: ['const http = require(\'http\');', 'const fs = require(\'fs\');', 'const server = http.createServer((req, res) => {', '    res.writeHead(200, {\'Content-Type\': \'text/plain\'});', '    res.end(\'Hello, World!\');', '});', 'server.listen(3000, \'127.0.0.1\', () => {', '    console.log(\'Server running at http://127.0.0.1:3000/\');', '});'],
+               'c++': ['#include <iostream>', '#include <string>', 'using namespace std;', 'int main() {', '    string target;', '    cout << "Enter target IP: ";', '    cin >> target;', '    cout << "Hacking " << target << "..." << endl;', '    return 0;', '}'],
+               java: ['public class Hacker {', '    public static void main(String[] args) {', '        String target = args[0];', '        System.out.println("Hacking " + target + "...");', '    }', '}'],
+               bash: ['#!/bin/bash', 'target=$1', 'echo "Scanning $target..."', 'nmap -A $target', 'echo "Hacking $target..."'],
+               html: ['<!DOCTYPE html>', '<html>', '<head>', '    <title>Hacker Page</title>', '</head>', '<body>', '    <h1>You have been hacked!</h1>', '</body>', '</html>']
+           };
+           const randomType = codeTypes[Math.floor(Math.random() * codeTypes.length)];
+           const randomSnippet = codeSnippets[randomType][Math.floor(Math.random() * codeSnippets[randomType].length)];
+           return randomSnippet;
+       }
+
+       function startHackerMode() {
+           hackerOverlay.style.display = 'block';
+           hackerCode.innerHTML = '';
+           hackerInterval = setInterval(() => {
+               const codeLine = generateRandomCode();
+               hackerCode.innerHTML += codeLine + '\n';
+               hackerOverlay.scrollTop = hackerOverlay.scrollHeight;
+           }, 50);
+       }
+
+       function stopHackerMode() {
+           clearInterval(hackerInterval);
+           hackerOverlay.style.display = 'none';
+       }
+
+       document.addEventListener('keydown', (e) => {
+           if (document.getElementById('hacker-game').classList.contains('active')) {
+               if (e.keyCode === 32) {
+                   e.preventDefault();
+                   startHackerMode();
+               }
+               if (e.keyCode === 27) {
+                   stopHackerMode();
+               }
+           }
+       });
+
+       hackerOverlay.addEventListener('click', stopHackerMode);
+
+       // 确保 DOM 加载完成后再初始化游戏
+       window.addEventListener('DOMContentLoaded', () => {
+           initGame(1);
+       });
+   </script>
+</body>
+</html>
 
 
