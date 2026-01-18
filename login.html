@@ -4,6 +4,43 @@
     <meta charset="UTF-8">
     <title>登录 - JellyTime 论坛</title>
     <style>
+        /* 底部导航栏样式 */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #fff;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 998;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #666;
+    font-size: 12px;
+}
+
+.nav-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.nav-item.active {
+    color: #4299e1;
+}
+
+/* 为页面内容添加底部内边距，避免被导航栏遮挡 */
+body {
+    padding-bottom: 80px;
+}
         * {
             margin: 0;
             padding: 0;
